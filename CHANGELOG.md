@@ -6,6 +6,9 @@
   không dùng; lúc tháo, DLL đó `SendMessage` tới luồng giao diện trong khi giữ loader lock → khoá chết với luồng giao diện.
 - **Sửa:** `Vision/Runtime/NativeModulePin.cs` ghim mọi `cogx*.dll` (không bao giờ tháo); `Program.cs` ghim lúc khởi động +
   mỗi 30 s. Test 179 → 180 (`NativeModulePinTests`). Phát hành `2.0.261101`.
+- **Cài ổ D** (2026-11-02): `D:\MeoVision\2.0.261101\` — `--backup` bằng bản cũ → `--restore` vào bản mới
+  (`upgrade-261031-to-261101.zip`; settings/users/products/machine giống hệt) + chép audit, bộ đếm, ngôn ngữ;
+  `--check` → READY; log khởi động ghim 10 `cogx*.dll` (có `cogxImagingDevice.dll`).
 - **Repo GitHub** (2026-11-02): `git init` + `songloi0730/MeoVision` (private). `.gitignore` thêm `dist/`, `Data/`, `*.dmp`,
   `reference/`, `docs/backups/`. Tên repo tham khảo trong CHANGELOG, DESIGN_LOG, CLAUDE.md, UI_Spec_v1, mockup v1 và
   csproj legacy đổi thành bí danh RefVis-E/G/K/L/M/N/O/P (bảng đối chiếu chỉ ở `docs/private` của sách).
