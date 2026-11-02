@@ -25,7 +25,7 @@ thay đổi ở các file đã trích vào sách** đều phải chạy lại sc
 | Ch23 — người dùng & dữ liệu | ✅ code: 3 vai trò + bảng quyền, PBKDF2, không khoá, file khôi phục Quản trị, tự đăng xuất, nhật ký thay đổi JSONL, phiên bản sản phẩm trong từng kết quả, CSV ngày × lệnh + ảnh NG trên luồng nền, xoay vòng theo ngày/dung lượng, form Đăng nhập + Lịch sử truy ngược phiên bản — 130/130 test, exe chạy thật (DESIGN_LOG [24]); ✅ chương sách đã viết + xuất bản v1.0.1.261028 |
 | Ch24 — triển khai & bảo trì | ✅ code: release.json + `tools/publish.ps1` (2.0.YYMMDD), `--check`, sao lưu/khôi phục trạm, chạy lại ảnh đã lưu + bộ ảnh có nhãn, gói chẩn đoán, sửa lỗ hổng file khôi phục (chỉ nhận chủ Administrators) — 140/140 test, chạy thật bản phát hành (DESIGN_LOG [25]) |
 | Thiết kế UI | 🟡 **v2.2** (2026-10-25, DESIGN_LOG [20], `docs/ui/UX_Workflows_v2.2.md`): thiết kế theo tình huống sử dụng — Thiết lập lệnh (ảnh/đèn/job/giới hạn/bộ ảnh thử một chỗ), bản nháp + áp dụng giữa hai lệnh, tham số nhanh, chụp loạt, đường tắt; Camera & đèn ở cấp máy. **Đã chốt (DESIGN_LOG [21]):** sửa khi ONLINE bằng bản nháp + chạy kèm trên sản phẩm thật + áp dụng/quay lại giữa hai lệnh; bỏ kiểm mẫu chuẩn đầu ca; giữ 8 ảnh/lệnh trong RAM, còn lại đọc từ ảnh đã lưu. Nền v2.1 (WinForms, vision riêng, 3 vai trò, control VisionPro thật) giữ nguyên |
-| Git / GitHub | ❌ chưa `git init`. Repo GitHub riêng: **chờ tác giả chọn tên + public/private** trước khi tạo |
+| Git / GitHub | ✅ `songloi0730/MeoVision` (**private**, nhánh `main`, từ 2026-11-02). Không đưa lên: `dist/`, `Data/`, `reference/`, `docs/backups/` (tên thật dự án tham khảo). Trước mỗi commit: không để tên thật — dùng bí danh RefVis-* |
 
 ## Bố cục dữ liệu (DESIGN_LOG [11])
 
@@ -98,5 +98,5 @@ bản Debug ghi ảnh/log vào `D:\MeoVisionDev\` nhưng Data vẫn trong OneDri
    `ScriptDialogGuard`; đèn → chụp → chạy ToolBlock → đọc output → bù/giới hạn → kết quả có kiểu; mỗi camera
    một hàng đợi. Ch21: kênh (TCP server, PLC Mitsubishi MC 3E trước, vùng D/M theo kênh), lệnh `SW` đổi sản
    phẩm qua `ProductStore.Switch`, lệnh sai kênh → `ERR,CHANNEL`.
-2. Hỏi tác giả tên repo GitHub + public/private → `git init`, `.gitignore` (bin/obj, `legacy/`?), push.
+2. ~~Repo GitHub~~ — xong 2026-11-02: `songloi0730/MeoVision` (private).
 3. Ch20–24 theo bảng trong DESIGN_LOG [9].
