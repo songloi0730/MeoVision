@@ -23,3 +23,6 @@ docs/backups/
 # OS
 Thumbs.db
 .DS_Store
+
+# samples/toolchains: exe dựng bằng build.cmd (job .vpp trong jobs/ thì commit được)
+samples/toolchains/*.exe

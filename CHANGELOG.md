@@ -1,5 +1,19 @@
 # CHANGELOG — MeoVision
 
+## Session 28 — 2026-11-02 — Tài liệu tool VisionPro + job mẫu nối nhiều tool
+
+- **`docs/vision-tools/VISIONPRO_TOOLS.md`:** bản đồ ~25 tool thường dùng; ToolBlock/terminal/record; hệ toạ độ (`@`, `.`,
+  `@\Calibrated`, Fixture) và vì sao vùng "đi theo" sản phẩm; nối bằng link (ảnh chụp thật `tbedit.png`) so với script;
+  hợp đồng job MeoVision; chi tiết từng tool (tham số, kết quả, bẫy, code); 5 mẫu nối tool khác; bảng 12 lỗi hay gặp.
+- **`samples/toolchains/`:** 3 job nối tool — C1 PMAlign → Fixture → Caliper ×2 + FindCircle ×2 → DistancePointPoint;
+  C2 PMAlign → Fixture → Blob; C3 PMAlign → Fixture → FindLine ×2 → IntersectLineLine + AngleLineLine (lệnh `Guide`).
+  Script đầy đủ ở `scripts/*.cs` (nguồn duy nhất, dán được vào editor); `MakeToolChainJobs.cs` dựng + tự kiểm 8 ảnh × 3 job
+  với `images/truth.csv`; `ToolShots.cs` chụp editor V2 của từng tool; `build.cmd`; `product.json` mẫu `P-2048`.
+- **Bộ ảnh** (`make_bracket_images.py`): 8 ảnh tấm xoay/dịch, lỗi, bụi, thiếu lỗ, tấm dài; đáp án kiểm độc lập bằng Python
+  (lần đầu rãnh khuyết lấn vào vùng Blob → sửa hình học). Hình vùng tool `docs/vision-tools/img/regions_*.png`.
+- **Chưa kiểm:** C# chưa biên dịch/chạy (container Linux, không VisionPro, không tải được .NET) — xem PROJECT_STATUS TODO 0a.
+  Không đổi code trong `src/` → không ảnh hưởng chương sách đã in.
+
 ## Session 27 — 2026-11-01 — Sửa treo "Not Responding" khi để yên lâu (DESIGN_LOG [30])
 
 - **Nguyên nhân (đọc chồng gọi native của tiến trình treo + spike):** COM tự tháo `cogxImagingDevice.dll` sau một thời gian

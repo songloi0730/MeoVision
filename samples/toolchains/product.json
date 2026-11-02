@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "id": "P-2048",
+  "name": "Bracket plate (tool-chain sample)",
+  "commands": [
+    {
+      "code": "M1",
+      "name": "Plate dimensions",
+      "channel": "CH1",
+      "camera": "TopCam",
+      "job": "C1_measure.vpp",
+      "lights": [ { "role": "MainLight", "channel": 1, "intensity": 180 } ],
+      "timeoutMs": 1000,
+      "retry": 1,
+      "outputs": [
+        { "terminal": "Width", "name": "Width", "unit": "px", "format": "0.00",
+          "lower": 358, "upper": 362 },
+        { "terminal": "Height", "name": "Height", "unit": "px", "format": "0.00",
+          "lower": 178, "upper": 182 },
+        { "terminal": "Pitch", "name": "Hole pitch", "unit": "px", "format": "0.00",
+          "lower": 228, "upper": 232 },
+        { "terminal": "HoleDiameter", "name": "Hole diameter", "unit": "px", "format": "0.00",
+          "lower": 46, "upper": 50 }
+      ],
+      "tunables": [
+        { "terminal": "AcceptThreshold", "name": "Locate accept score", "unit": "",
+          "min": 0.3, "max": 0.95, "step": 0.05, "value": 0.6 }
+      ]
+    },
+    {
+      "code": "M2",
+      "name": "Surface defects",
+      "channel": "CH1",
+      "camera": "TopCam",
+      "job": "C2_defects.vpp",
+      "lights": [ { "role": "MainLight", "channel": 1, "intensity": 180 } ],
+      "timeoutMs": 1000,
+      "outputs": [
+        { "terminal": "DefectCount", "name": "Defects", "format": "0", "lower": 0, "upper": 0 },
+        { "terminal": "MaxDefectArea", "name": "Largest defect", "unit": "px2", "format": "0" }
+      ],
+      "tunables": [
+        { "terminal": "AcceptThreshold", "name": "Locate accept score", "unit": "",
+          "min": 0.3, "max": 0.95, "step": 0.05, "value": 0.6 },
+        { "terminal": "MinArea", "name": "Min defect area", "unit": "px",
+          "min": 5, "max": 2000, "step": 1, "value": 30 },
+        { "terminal": "Threshold", "name": "Dark threshold", "unit": "",
+          "min": 20, "max": 200, "step": 1, "value": 120 }
+      ]
+    },
+    {
+      "code": "M3",
+      "name": "Corner for robot",
+      "kind": "Guide",
+      "channel": "CH1",
+      "camera": "TopCam",
+      "job": "C3_corner.vpp",
+      "lights": [ { "role": "MainLight", "channel": 1, "intensity": 180 } ],
+      "timeoutMs": 1000,
+      "outputs": [
+        { "terminal": "X", "name": "Corner X", "unit": "px", "format": "0.000" },
+        { "terminal": "Y", "name": "Corner Y", "unit": "px", "format": "0.000" },
+        { "terminal": "Angle", "name": "Plate angle", "unit": "deg", "format": "0.000",
+          "lower": -20, "upper": 20 },
+        { "terminal": "Squareness", "name": "Corner squareness", "unit": "deg",
+          "format": "0.00", "lower": 89.5, "upper": 90.5 }
+      ],
+      "tunables": [
+        { "terminal": "AcceptThreshold", "name": "Locate accept score", "unit": "",
+          "min": 0.3, "max": 0.95, "step": 0.05, "value": 0.6 }
+      ]
+    }
+  ]
+}

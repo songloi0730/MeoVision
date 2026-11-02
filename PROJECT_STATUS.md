@@ -2,7 +2,7 @@
 
 > Đọc file này TRƯỚC NHẤT mỗi session. Trạng thái của bản V0–V3 cũ: `legacy/PROJECT_STATUS_V0-V3.md`.
 
-**Cập nhật lần cuối:** 2026-11-01 (Session 27 — sửa treo khi để yên lâu: ghim DLL native VisionPro — DESIGN_LOG [30]; Session 26 — không gửi lý do cho máy, lệnh `kind` Inspect/Guide, bỏ qua chỉ cho lệnh kiểm tra — DESIGN_LOG [29]; trước đó Session 25: bỏ qua có kiểm soát, dải cảnh báo, Giao tiếp, Hiệu chuẩn — DESIGN_LOG [28]). MeoVision đã dựng lại từ đầu cho **Phần VI**
+**Cập nhật lần cuối:** 2026-11-02 (Session 28 — tài liệu tool VisionPro + 3 job mẫu nối nhiều tool, `docs/vision-tools/`, CHƯA chạy trên VisionPro; Session 27 — sửa treo khi để yên lâu: ghim DLL native VisionPro — DESIGN_LOG [30]; Session 26 — không gửi lý do cho máy, lệnh `kind` Inspect/Guide, bỏ qua chỉ cho lệnh kiểm tra — DESIGN_LOG [29]; trước đó Session 25: bỏ qua có kiểm soát, dải cảnh báo, Giao tiếp, Hiệu chuẩn — DESIGN_LOG [28]). MeoVision đã dựng lại từ đầu cho **Phần VI**
 của sách (DESIGN_LOG [9]–[19]). Chương 17–21 đã **xong code và xong chương sách**; code
 trong sách được tiêm nguyên văn từ repo này bằng `tools/inject_code.py` của dự án sách. Vì vậy **mọi
 thay đổi ở các file đã trích vào sách** đều phải chạy lại script đó (xem "Ràng buộc với sách" bên dưới).
@@ -25,6 +25,7 @@ thay đổi ở các file đã trích vào sách** đều phải chạy lại sc
 | Ch23 — người dùng & dữ liệu | ✅ code: 3 vai trò + bảng quyền, PBKDF2, không khoá, file khôi phục Quản trị, tự đăng xuất, nhật ký thay đổi JSONL, phiên bản sản phẩm trong từng kết quả, CSV ngày × lệnh + ảnh NG trên luồng nền, xoay vòng theo ngày/dung lượng, form Đăng nhập + Lịch sử truy ngược phiên bản — 130/130 test, exe chạy thật (DESIGN_LOG [24]); ✅ chương sách đã viết + xuất bản v1.0.1.261028 |
 | Ch24 — triển khai & bảo trì | ✅ code: release.json + `tools/publish.ps1` (2.0.YYMMDD), `--check`, sao lưu/khôi phục trạm, chạy lại ảnh đã lưu + bộ ảnh có nhãn, gói chẩn đoán, sửa lỗ hổng file khôi phục (chỉ nhận chủ Administrators) — 140/140 test, chạy thật bản phát hành (DESIGN_LOG [25]) |
 | Thiết kế UI | 🟡 **v2.2** (2026-10-25, DESIGN_LOG [20], `docs/ui/UX_Workflows_v2.2.md`): thiết kế theo tình huống sử dụng — Thiết lập lệnh (ảnh/đèn/job/giới hạn/bộ ảnh thử một chỗ), bản nháp + áp dụng giữa hai lệnh, tham số nhanh, chụp loạt, đường tắt; Camera & đèn ở cấp máy. **Đã chốt (DESIGN_LOG [21]):** sửa khi ONLINE bằng bản nháp + chạy kèm trên sản phẩm thật + áp dụng/quay lại giữa hai lệnh; bỏ kiểm mẫu chuẩn đầu ca; giữ 8 ảnh/lệnh trong RAM, còn lại đọc từ ảnh đã lưu. Nền v2.1 (WinForms, vision riêng, 3 vai trò, control VisionPro thật) giữ nguyên |
+| Tài liệu tool VisionPro | 🟡 `docs/vision-tools/VISIONPRO_TOOLS.md` (Session 28): bản đồ tool, hệ toạ độ/Fixture, link vs script, từng tool (PMAlign, Fixture, Caliper, FindLine, FindCircle, Blob, Histogram, Dimensioning, ID, OCRMax, màu, hiệu chuẩn) + 3 job nối tool `samples/toolchains` (C1 đo kích thước, C2 lỗi bề mặt, C3 góc tấm Guide), bộ 8 ảnh có đáp án (kiểm bằng Python). **Chưa biên dịch/chạy** — phiên trên Linux không có VisionPro: chạy `samples\toolchains\build.cmd` (tự so đáp án) rồi `build.cmd shots` (chụp editor) |
 | Git / GitHub | ✅ `songloi0730/MeoVision` (**private**, nhánh `main`, từ 2026-11-02). Không đưa lên: `dist/`, `Data/`, `reference/`, `docs/backups/` (tên thật dự án tham khảo). Trước mỗi commit: không để tên thật — dùng bí danh RefVis-* |
 
 ## Bố cục dữ liệu (DESIGN_LOG [11])
@@ -89,6 +90,9 @@ Chương trình (exe, DLL, `languages`, `appsettings.json`) tách hẳn khỏi `
 Cài đặt chạy thật của máy này: `D:\MeoVision\2.0.261031\` (chương trình + Data), ảnh/kết quả/log `D:\MeoVisionData\`;
 bản Debug ghi ảnh/log vào `D:\MeoVisionDev\` nhưng Data vẫn trong OneDrive (sẽ báo vàng — chỉ dùng để phát triển).
 
+0a. **Session 28 còn dở:** chạy `samples\toolchains\build.cmd` trên máy có VisionPro — sửa tên API/tham số nếu biên dịch
+   lỗi hoặc có `MISMATCH`; `build.cmd shots` → chèn ảnh `docs/vision-tools/shots/*.png` vào mục tương ứng của
+   VISIONPRO_TOOLS.md (bảng mục 12.2); sau đó gỡ các dấu "chưa chạy" trong tài liệu.
 0. **Session 23 còn dở:** (a) ✅ exe Debug chạy lại, tài khoản nạp trước VisionPro; (b) ✅ sách Ch17/Ch24 đã sửa, xuất
    bản; (c) chụp lại Hình 22.2, 22.3, 23.1, 23.3, 23.4 (giao diện mới, nền xám); (d) ✅ phát hành `2.0.261030` + nâng cấp
    thật từ `2.0.261029`; (e) nhiều camera trong một lệnh mới kiểm bằng test, chưa có

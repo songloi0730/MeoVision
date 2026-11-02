@@ -7,6 +7,7 @@ của Phần VI là một khối chức năng; code trích trong sách lấy ngu
 
 - Trạng thái: [`PROJECT_STATUS.md`](PROJECT_STATUS.md)
 - Quyết định thiết kế: [`docs/design-notes/DESIGN_LOG.md`](docs/design-notes/DESIGN_LOG.md) — Phần VI từ mục [9]
+- Tool VisionPro thường dùng + job nối nhiều tool (script đầy đủ, ảnh mẫu có đáp án): [`docs/vision-tools/VISIONPRO_TOOLS.md`](docs/vision-tools/VISIONPRO_TOOLS.md)
 - Bản V0–V3 cũ (có engine giả lập): thư mục `legacy/`, không thuộc solution
 
 ## Yêu cầu
