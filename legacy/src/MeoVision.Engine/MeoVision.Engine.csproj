@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>MeoVision.Engine</RootNamespace>
+    <AssemblyName>MeoVision.Engine</AssemblyName>
+    <!-- Cognex.VisionPro.dll build cho AMD64 — AnyCPU có thể tải nhầm bitness lúc runtime -->
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference DLL cài thật của Cognex qua $(CognexVisionProDir) (định nghĩa ở
+         Directory.Build.props) — không copy DLL vào repo (lý do: xem
+         reference/GitHub_Reference_Projects.md, mục RefVis-M). Private=False vì 3 DLL này
+         đã đăng ký GAC khi cài VisionPro (xác nhận thật: Assembly.Load bằng strong name suông,
+         không cần path, load được từ GAC_64) — không cần copy cục bộ, tránh trùng/lệch bản GAC. -->
+    <Reference Include="Cognex.VisionPro">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Core">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ToolGroup">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ToolGroup.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.FGGigE">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.FGGigE.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeoVision.Core\MeoVision.Core.csproj" />
+  </ItemGroup>
+
+</Project>

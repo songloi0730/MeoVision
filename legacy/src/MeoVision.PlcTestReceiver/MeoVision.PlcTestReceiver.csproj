@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MeoVision.PlcTestReceiver</RootNamespace>
+    <AssemblyName>MeoVision.PlcTestReceiver</AssemblyName>
+  </PropertyGroup>
+
+</Project>

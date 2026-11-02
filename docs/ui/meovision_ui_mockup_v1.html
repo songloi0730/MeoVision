@@ -1,0 +1,757 @@
+<title>MeoVision UI Mockup</title>
+<style>
+/* Layout: khung máy 1920×1080 co theo bề rộng, bên dưới là ghi chú thiết kế của màn đang xem.
+   Token màu lấy nguyên từ hệ HMI AM.AutoFrame (ISA-101: nền xám, màu chỉ cho trạng thái). */
+:root{
+  color-scheme: light;
+  --page:#9aa0a6; --bg:#DCDCDC; --panel:#F2F2F2; --panel2:#FAFAFA; --line:#C8C8C8;
+  --txt:#2B2B2B; --txt2:#6A6A6A; --txt3:#9A9A9A;
+  --ok:#1E7E46; --okbg:#E2F1E8; --ng:#C0392B; --ngbg:#F9E6E3;
+  --info:#1565C0; --infobg:#E3EDF8; --warn:#B26A00; --warnbg:#FFF1D6; --cam:#1F1F1F;
+  --sel:#1565C0; --white:#FFFFFF; --ink:#16181A;
+  --f-ui:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --f-mono:Consolas,"Cascadia Mono","Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--page);color:var(--txt)}
+body{font-family:var(--f-ui);padding-block:16px;padding-inline:16px;margin:0}
+button{font-family:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--sel);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- trang bao ngoài ---------- */
+.page-head{max-width:1920px;margin:0 auto 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.page-head h1{margin:0;font-size:22px;font-weight:600;color:var(--ink);text-wrap:balance}
+.page-head p{margin:4px 0 0;color:var(--ink);opacity:.8;font-size:13px;max-width:70ch}
+.demo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--ink)}
+.demo label{display:flex;gap:6px;align-items:center}
+.demo select,.demo button{font-size:13px;padding:6px 10px;border:1px solid #6d737a;background:var(--panel2);border-radius:3px;cursor:pointer}
+.demo button[aria-pressed="true"]{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.stage{max-width:1920px;margin:0 auto;overflow:hidden}
+.scaler{width:1920px;height:1080px;transform-origin:0 0}
+.notes{max-width:1920px;margin:14px auto 0;background:var(--panel);border:1px solid var(--line);padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px 28px}
+.notes h2{grid-column:1/-1;margin:0;font-size:17px}
+.notes h3{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.notes ul{margin:0;padding-left:18px;font-size:13px;line-height:1.5}
+.notes li{margin-bottom:3px}
+.notes .src{font-size:12px;color:var(--txt2)}
+
+/* ---------- khung máy ---------- */
+.hmi{width:1920px;height:1080px;background:var(--bg);display:flex;flex-direction:column;font-size:14px;position:relative;overflow:hidden}
+.hdr{height:56px;background:var(--panel2);border-bottom:1px solid var(--line);display:flex;align-items:stretch}
+.brand{display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid var(--line);min-width:250px}
+.brand b{font-size:17px}
+.brand small{color:var(--txt2);font-size:12px}
+.chips{display:flex;align-items:center;gap:6px;padding:0 12px;border-right:1px solid var(--line)}
+.chip{height:26px;display:inline-flex;align-items:center;padding:0 10px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel);border-radius:2px;white-space:nowrap}
+.chip.on{background:var(--okbg);color:var(--ok);border-color:#b9dcc6}
+.chip.off{background:var(--warnbg);color:var(--warn);border-color:#e9cf9a}
+.chip.ng{background:var(--ngbg);color:var(--ng);border-color:#eab7b0}
+.tabs{display:flex;flex:1;overflow:hidden}
+.tab{border:0;background:none;padding:0 18px;font-size:14px;cursor:pointer;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:6px;height:56px}
+.tab[aria-current="page"]{color:var(--txt);border-bottom-color:var(--sel);font-weight:600}
+.tab .lock{font-size:11px;color:var(--txt3)}
+.hright{display:flex;align-items:center;gap:8px;padding:0 12px;border-left:1px solid var(--line)}
+.hbtn{height:44px;border:1px solid var(--line);background:var(--panel);padding:0 12px;border-radius:2px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px}
+.prod{display:flex;flex-direction:column;line-height:1.15;font-size:12px;color:var(--txt2);padding:0 6px}
+.prod b{color:var(--txt);font-size:13px}
+.clock{font-family:var(--f-mono);font-size:13px;display:flex;align-items:center;gap:6px;min-width:96px}
+.beat{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:beat 1s infinite}
+@keyframes beat{50%{opacity:.25}}
+.role-dot{width:10px;height:10px;border-radius:50%}
+
+.banner{height:36px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--txt2);font-size:13px}
+.banner.alarm{height:52px;background:var(--ngbg);color:var(--ng);font-weight:600;font-size:15px}
+.banner.prompt{height:52px;background:var(--warnbg);color:var(--warn);font-weight:600;font-size:15px}
+.banner .bbtn{height:40px;padding:0 16px;border:1px solid currentColor;background:var(--white);cursor:pointer;font-weight:600;font-size:14px;border-radius:2px}
+.banner .more{font-size:12px;border:1px solid currentColor;padding:2px 8px;border-radius:10px}
+.banner .sp{flex:1}
+
+.content{flex:1;min-height:0;display:flex;padding:10px;gap:10px}
+.actbar{height:76px;background:var(--panel2);border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 16px}
+.abtn{height:64px;min-width:150px;border:1px solid var(--line);background:var(--panel);border-radius:2px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 18px}
+.abtn.primary{background:var(--okbg);border-color:#9fcfb1;color:var(--ok)}
+.abtn.offline{background:var(--warnbg);border-color:#e3c27f;color:var(--warn)}
+.abtn.sm{height:48px;min-width:120px;font-size:14px;font-weight:500}
+.abtn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.divider{width:1px;height:48px;background:var(--line);margin:0 8px}
+.conn{margin-left:auto;height:44px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer;border-radius:2px;font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.dot.ok{background:var(--ok)} .dot.ng{background:var(--ng)} .dot.warn{background:var(--warn)} .dot.off{background:var(--txt3)}
+
+/* ---------- khối dùng chung ---------- */
+.card{background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.card>h3{margin:0;height:38px;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;font-weight:600;border-bottom:1px solid var(--line);background:var(--panel)}
+.card>h3 .r{margin-left:auto;font-weight:400;color:var(--txt2);font-size:12px}
+.cbody{padding:10px 12px;min-height:0;overflow:auto}
+.subtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);background:var(--panel)}
+.subtab{height:44px;padding:0 18px;border:0;background:none;cursor:pointer;font-size:14px;color:var(--txt2);border-bottom:3px solid transparent}
+.subtab[aria-selected="true"]{color:var(--txt);border-bottom-color:var(--sel);font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+table.t th{text-align:left;font-weight:600;color:var(--txt2);font-size:12px;padding:8px 8px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0}
+table.t td{padding:0 8px;height:40px;border-bottom:1px solid #e3e3e3}
+table.t tr.ngrow td{background:var(--ngbg)}
+table.t tr.sel td{background:var(--infobg)}
+.mono{font-family:var(--f-mono)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.res{font-weight:700}
+.res.ok{color:var(--ok)} .res.ng{color:var(--ng)}
+.muted{color:var(--txt2)} .faint{color:var(--txt3)}
+.btn{height:48px;padding:0 16px;border:1px solid var(--line);background:var(--panel);border-radius:2px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.btn.sm{height:36px;font-size:13px;padding:0 12px}
+.btn.pri{background:var(--infobg);border-color:#9fbfe6;color:var(--info);font-weight:600}
+.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;align-items:center}
+.col{display:flex;flex-direction:column;gap:10px;min-height:0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--panel);border:1px solid #e0e0e0;padding:8px 10px}
+.kpi .l{font-size:12px;color:var(--txt2)}
+.kpi .v{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:11px;color:var(--txt3)}
+.kpi.ng .v{color:var(--ng)} .kpi.ok .v{color:var(--ok)}
+.lock-note{display:flex;align-items:center;gap:10px;background:var(--warnbg);color:var(--warn);border:1px solid #e3c27f;padding:8px 12px;font-size:13px;font-weight:600}
+.empty{border:1px dashed var(--txt3);color:var(--txt2);padding:18px;text-align:center;font-size:13px;line-height:1.5}
+.bar{height:10px;background:#e3e3e3;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--txt2)}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--txt2)}
+.field input,.field select{height:40px;border:1px solid var(--line);background:var(--white);padding:0 10px;font-size:14px;color:var(--txt);font-family:inherit}
+.field input:disabled,.field select:disabled{background:var(--panel);color:var(--txt3)}
+input[type=range]{width:100%;accent-color:var(--txt2)}
+
+/* camera tile */
+.cams{display:grid;gap:10px;flex:1;min-height:0}
+.cam{background:var(--cam);display:flex;flex-direction:column;min-height:0;border:1px solid #333}
+.camh{height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;color:#ddd;font-size:13px;background:#2a2a2a}
+.camh b{color:#fff}
+.camh .rv{margin-left:auto;display:flex;gap:10px;align-items:center}
+.camh .tag{padding:2px 8px;font-weight:700;font-size:12px}
+.camh .tag.ok{background:var(--ok);color:#fff} .camh .tag.ng{background:var(--ng);color:#fff}
+.camimg{flex:1;min-height:0;position:relative}
+.camimg canvas{position:absolute;inset:0;width:100%;height:100%}
+.camf{height:34px;display:flex;align-items:center;gap:4px;padding:0 8px;background:#2a2a2a;color:#aaa;font-size:12px}
+.hist{display:flex;gap:3px;margin-left:auto}
+.hist button{width:18px;height:18px;border:0;cursor:pointer;padding:0}
+.hist .ok{background:#2f8f57} .hist .ng{background:#d14b3d} .hist .cur{outline:2px solid #fff}
+.tool{height:40px;display:flex;align-items:center;gap:4px;padding:0 6px;background:var(--panel);border-bottom:1px solid var(--line)}
+.tool button{height:32px;border:1px solid var(--line);background:var(--panel2);padding:0 10px;font-size:12px;cursor:pointer;border-radius:2px}
+.tool button[aria-pressed="true"]{background:var(--infobg);color:var(--info);border-color:#9fbfe6}
+.tool .sp{flex:1}
+
+.steps{display:flex;flex-direction:column;gap:6px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid #e0e0e0;background:var(--panel);cursor:pointer;text-align:left;font-size:13px;width:100%}
+.step .n{width:24px;height:24px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none}
+.step.done .n{background:var(--ok);color:#fff}
+.step.cur{border-color:var(--sel);background:var(--infobg)}
+.step.cur .n{background:var(--sel);color:#fff}
+.step small{display:block;color:var(--txt2);font-size:12px;margin-top:2px}
+
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;font-size:14px;max-width:760px;box-shadow:0 4px 18px rgba(0,0,0,.25);border-left:4px solid var(--warn)}
+.pop{position:absolute;right:16px;bottom:84px;width:620px;background:var(--panel2);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.2);display:grid;grid-template-columns:1fr 1fr}
+.pop h4{margin:0;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line);background:var(--panel)}
+.pop .it{display:flex;gap:8px;align-items:center;padding:8px 12px;font-size:13px;border-bottom:1px solid #eee}
+.pop .it span:last-child{margin-left:auto;color:var(--txt2);font-size:12px}
+.pop footer{grid-column:1/-1;padding:8px 12px;font-size:12px;color:var(--txt2);background:var(--panel)}
+.svgchart text{fill:var(--txt2);font-size:11px;font-family:var(--f-ui)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--txt2);flex-wrap:wrap}
+.legend span{display:flex;gap:6px;align-items:center}
+.sw{width:12px;height:12px;display:inline-block}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.map button{aspect-ratio:1;border:1px solid #cfcfcf;background:var(--okbg);cursor:pointer;font-size:11px;color:var(--ok);padding:0}
+.map button.ng{background:var(--ngbg);color:var(--ng);border-color:#e3a39a;font-weight:700}
+.map button.na{background:var(--panel);color:var(--txt3)}
+.map button.sel{outline:3px solid var(--sel)}
+.matrix td.y{color:var(--ok);font-weight:700;text-align:center}
+.matrix td.n{color:var(--txt3);text-align:center}
+.sidelist{display:flex;flex-direction:column}
+.sidelist button{height:48px;border:0;border-left:3px solid transparent;background:none;text-align:left;padding:0 14px;cursor:pointer;font-size:14px;color:var(--txt2)}
+.sidelist button[aria-selected="true"]{border-left-color:var(--sel);background:var(--infobg);color:var(--txt);font-weight:600}
+.pcard{border:1px solid #e0e0e0;background:var(--panel);padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px;font-size:13px;width:100%}
+.pcard[aria-selected="true"]{border-color:var(--sel);background:var(--infobg)}
+.pcard b{font-size:14px}
+.raw{font-family:var(--f-mono);font-size:12px;line-height:1.6;background:var(--white);border:1px solid var(--line);padding:8px 10px;overflow:auto}
+.raw .in{color:var(--info)} .raw .out{color:var(--ok)} .raw .err{color:var(--ng)}
+</style>
+
+<div class="page-head">
+  <div>
+    <h1>MeoVision — mẫu giao diện v1 (1920×1080, IPC chuột + cảm ứng)</h1>
+    <p>Bấm các tab trên khung máy để đi qua 8 màn. Đổi vai trò, Online/Offline và bật thử các tình huống bên phải để xem giao diện phản ứng. Dữ liệu là ví dụ minh hoạ.</p>
+  </div>
+  <div class="demo" role="group" aria-label="Điều khiển mockup">
+    <label for="roleSel">Vai trò
+      <select id="roleSel">
+        <option value="0">Vận hành</option>
+        <option value="1">Trưởng ca</option>
+        <option value="2" selected>Kỹ sư</option>
+        <option value="3">Quản trị</option>
+      </select>
+    </label>
+    <button type="button" id="dAlarm" aria-pressed="false">Cảnh báo: đèn mất kết nối</button>
+    <button type="button" id="dPrompt" aria-pressed="false">NG liên tiếp vượt giới hạn</button>
+    <button type="button" id="dEmpty" aria-pressed="false">Ca mới (chưa có kết quả)</button>
+  </div>
+</div>
+
+<div class="stage" id="stage"><div class="scaler" id="scaler">
+  <div class="hmi" id="hmi">
+    <header class="hdr">
+      <div class="brand"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="1" y="1" width="28" height="28" fill="#2B2B2B"/><circle cx="15" cy="15" r="8" fill="none" stroke="#DCDCDC" stroke-width="2.5"/><circle cx="15" cy="15" r="3" fill="#DCDCDC"/></svg><div><b>MeoVision</b><br><small title="machine.json → machineName">AOI-02 · vision PC</small></div></div>
+      <div class="chips"><span class="chip" id="cMode">ONLINE</span><span class="chip" id="cState">SẴN SÀNG</span></div>
+      <nav class="tabs" id="tabs" aria-label="Điều hướng"></nav>
+      <div class="hright">
+        <div class="prod"><span>Sản phẩm</span><b id="hProd">P1001 · Nắp nhôm</b></div>
+        <div class="clock"><span class="beat" title="Nhịp tim: phần mềm còn sống"></span><span id="clk">14:32:08</span></div>
+        <button class="hbtn" type="button" id="langBtn" aria-label="Ngôn ngữ">VI ▾</button>
+        <button class="hbtn" type="button" id="userBtn"><span class="role-dot" id="roleDot"></span><span id="userName">kysu.an · Kỹ sư</span></button>
+      </div>
+    </header>
+    <div class="banner" id="banner"></div>
+    <main class="content" id="content"></main>
+    <footer class="actbar" id="actbar"></footer>
+    <div class="toast" id="toast" hidden></div>
+    <div class="pop" id="pop" hidden></div>
+  </div>
+</div></div>
+
+<section class="notes" id="notes" aria-live="polite"></section>
+
+<script>
+(function(){
+"use strict";
+const ROLES=["Vận hành","Trưởng ca","Kỹ sư","Quản trị"];
+const ROLE_USERS=["op.minh","truongca.lan","kysu.an","admin"];
+const ROLE_COLORS=["#9A9A9A","#1565C0","#B26A00","#C0392B"];
+const S={screen:"home",role:2,online:true,alarm:false,prompt:false,empty:false,homeSub:"cam",setupStep:3,sysSub:"users",prodSel:0,histSel:1,devSel:2,mapSel:23,recall:null};
+
+const TABS=[
+ {id:"home",label:"Vận hành",min:0},
+ {id:"history",label:"Lịch sử & ảnh",min:0},
+ {id:"stats",label:"Thống kê",min:0},
+ {id:"product",label:"Sản phẩm",min:1},
+ {id:"devices",label:"Thiết bị",min:1},
+ {id:"setup",label:"Thiết lập ảnh",min:2},
+ {id:"calib",label:"Hiệu chuẩn",min:2},
+ {id:"system",label:"Hệ thống",min:3},
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- dữ liệu ví dụ ---------- */
+const CMDS=[
+ {code:"T1",name:"Định vị nắp",cam:"TopCam",job:"jobs/Locate.vpp",exp:"8.0",light:"A=180,B=0",to:800,retry:1,outs:"OK, X, Y, U",save:"NG"},
+ {code:"T2",name:"Kiểm mép & ba via",cam:"TopCam",job:"jobs/Inspect.vpp",exp:"12.5",light:"A=120,B=200",to:1000,retry:0,outs:"OK, Code",save:"NG"},
+ {code:"B1",name:"Định vị đáy",cam:"BottomCam",job:"jobs/Bottom.vpp",exp:"6.0",light:"C=255",to:800,retry:1,outs:"OK, X, Y, U",save:"NG"},
+ {code:"TB",name:"Ghép T1+B1 → bù XYU",cam:"—",job:"(lệnh ghép, không job)",exp:"—",light:"—",to:300,retry:0,outs:"OK, dX, dY, dU",save:"—"},
+];
+const RES=[
+ ["14:32:07.912","T1","SN2610-08841","OK","0.97","X 12.031 · Y −4.112 · U 0.42°","182"],
+ ["14:32:07.640","B1","SN2610-08841","OK","0.95","X 0.118 · Y −0.044 · U −0.10°","161"],
+ ["14:32:05.118","T2","SN2610-08840","NG","0.91","Ba via mép trái 0.38 mm (≤ 0.20)","231"],
+ ["14:32:04.870","T1","SN2610-08840","OK","0.96","X 12.044 · Y −4.090 · U 0.40°","179"],
+ ["14:32:02.301","T2","SN2610-08839","OK","0.93","Ba via max 0.11 mm","224"],
+ ["14:32:02.055","T1","SN2610-08839","OK","0.97","X 12.020 · Y −4.130 · U 0.44°","176"],
+ ["14:31:59.540","T2","SN2610-08838","OK","0.94","Ba via max 0.09 mm","219"],
+ ["14:31:59.291","T1","SN2610-08838","NG","0.48","Không tìm thấy mẫu (score 0.48 < 0.70)","244"],
+];
+const DEVS=[
+ {role:"TopCam",type:"CognexGigE",desc:"GigE SN 24130517 · 2448×2048",st:"ok",detail:"Đã kết nối · chụp gần nhất 182 ms"},
+ {role:"BottomCam",type:"CognexGigE",desc:"GigE SN 24130522 · 2448×2048",st:"ok",detail:"Đã kết nối · chụp gần nhất 161 ms"},
+ {role:"MainLight",type:"AsciiLight",desc:"COM3 9600 · 4 kênh",st:"ok",detail:"Đã kết nối · kiểm còn sống 3 s trước"},
+];
+
+/* ---------- ảnh camera vẽ bằng canvas ---------- */
+function drawCam(cv,kind,ng){
+  const r=cv.getBoundingClientRect(); if(!r.width) return;
+  const W=cv.width=Math.round(r.width), H=cv.height=Math.round(r.height);
+  const g=cv.getContext("2d");
+  g.fillStyle="#151515"; g.fillRect(0,0,W,H);
+  let seed=kind.length*97+(ng?7:3);
+  const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+  for(let i=0;i<W*H/90;i++){const v=20+rnd()*22|0;g.fillStyle=`rgb(${v},${v},${v})`;g.fillRect(rnd()*W,rnd()*H,2,2)}
+  const cx=W/2,cy=H/2, pw=Math.min(W,H)*0.62;
+  if(kind==="TopCam"){
+    g.fillStyle="#9b9b9b"; g.fillRect(cx-pw/2,cy-pw*0.38,pw,pw*0.76);
+    g.fillStyle="#bdbdbd"; g.fillRect(cx-pw/2+8,cy-pw*0.38+8,pw-16,pw*0.76-16);
+    g.fillStyle="#3a3a3a"; [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]].forEach(([a,b])=>{g.beginPath();g.arc(cx+a*pw,cy+b*pw,pw*0.05,0,7);g.fill()});
+    g.fillStyle="#2a2a2a"; g.beginPath(); g.arc(cx,cy,pw*0.12,0,7); g.fill();
+  } else {
+    g.fillStyle="#a9a9a9"; g.beginPath(); g.arc(cx,cy,pw*0.42,0,7); g.fill();
+    g.fillStyle="#6f6f6f"; g.beginPath(); g.arc(cx,cy,pw*0.30,0,7); g.fill();
+    g.fillStyle="#d0d0d0"; for(let k=0;k<8;k++){const a=k*Math.PI/4;g.beginPath();g.arc(cx+Math.cos(a)*pw*0.36,cy+Math.sin(a)*pw*0.36,pw*0.025,0,7);g.fill()}
+  }
+  g.lineWidth=2; g.strokeStyle="#33d17a";
+  g.strokeRect(cx-pw*0.55,cy-pw*0.45,pw*1.1,pw*0.9);
+  g.beginPath(); g.moveTo(cx-18,cy); g.lineTo(cx+18,cy); g.moveTo(cx,cy-18); g.lineTo(cx,cy+18); g.stroke();
+  g.font="13px Segoe UI, Arial"; g.fillStyle="#33d17a"; g.fillText("vùng tìm",cx-pw*0.55+4,cy-pw*0.45-6);
+  if(ng){ g.strokeStyle="#ff5a4a"; g.lineWidth=3; const x=cx-pw/2-6,y=cy-pw*0.1; g.strokeRect(x-14,y-22,34,44);
+    g.fillStyle="#ff5a4a"; g.font="bold 14px Segoe UI, Arial"; g.fillText("Ba via 0.38 mm",x+26,y-8); }
+}
+
+/* ---------- khung chung ---------- */
+function renderTabs(){
+  const nav=$("#tabs");
+  nav.innerHTML=TABS.filter(t=>S.role>=t.min).map(t=>`<button type="button" class="tab" data-tab="${t.id}" ${S.screen===t.id?'aria-current="page"':""}>${t.label}</button>`).join("");
+  nav.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{S.screen=b.dataset.tab;render()});
+}
+function renderHeader(){
+  const m=$("#cMode"); m.textContent=S.online?"ONLINE · nhận lệnh":"OFFLINE · thiết lập"; m.className="chip "+(S.online?"on":"off");
+  const st=$("#cState");
+  if(S.prompt){st.textContent="CHỜ XỬ LÝ";st.className="chip ng"}
+  else if(S.alarm){st.textContent="CẢNH BÁO";st.className="chip off"}
+  else {st.textContent=S.online?"SẴN SÀNG":"KHÔNG NHẬN LỆNH";st.className="chip"}
+  $("#roleDot").style.background=ROLE_COLORS[S.role];
+  $("#userName").textContent=ROLE_USERS[S.role]+" · "+ROLES[S.role];
+}
+function renderBanner(){
+  const b=$("#banner");
+  if(S.prompt){
+    b.className="banner prompt";
+    b.innerHTML=`<span>⚠ T2 NG 5/5 lần liên tiếp (giới hạn 5) — máy đã được báo dừng · lỗi đại diện: Ba via mép trái</span><span class="sp"></span>
+      <button class="bbtn" type="button" data-act="viewng">Xem ảnh NG</button>
+      <button class="bbtn" type="button" data-act="ackprompt">Đã kiểm, cho chạy tiếp</button>`;
+  } else if(S.alarm){
+    b.className="banner alarm";
+    b.innerHTML=`<span>● MainLight mất kết nối (COM3 không phản hồi sau 1000 ms) — lệnh dùng đèn này sẽ bị từ chối · đang tự nối lại, lần 3 sau 8 s</span><span class="more">+1 khác</span><span class="sp"></span>
+      <button class="bbtn" type="button" data-act="ack">Xác nhận (ACK)</button>`;
+  } else {
+    b.className="banner";
+    b.innerHTML=`<span style="color:var(--ok)">✓</span><span>Không có cảnh báo · ${S.online?"Đang nhận lệnh từ máy (TCP :5000)":"Offline — máy không nhận được kết quả vision"}</span>`;
+  }
+  b.querySelectorAll("[data-act]").forEach(x=>x.onclick=()=>{
+    if(x.dataset.act==="ack"){S.alarm=false;syncDemo();}
+    if(x.dataset.act==="ackprompt"){ if(S.role<1) return toast("Cần Trưởng ca trở lên để cho chạy tiếp sau NG liên tiếp."); S.prompt=false;syncDemo(); }
+    if(x.dataset.act==="viewng"){S.screen="history";S.histSel=2}
+    render();
+  });
+}
+function renderActbar(){
+  const a=$("#actbar");
+  const devOk=S.alarm?2:3;
+  a.innerHTML=`
+   <button class="abtn ${S.online?"primary":"offline"}" type="button" id="aOnline" title="Nhấn giữ 1 s">${S.online?"● ONLINE — nhấn giữ để chuyển Offline":"○ OFFLINE — nhấn giữ để Online"}</button>
+   <button class="abtn sm" type="button" data-need="1" data-off="0" data-why="Cần Trưởng ca trở lên." id="aReset">Đặt lại bộ đếm ca</button>
+   <span class="divider"></span>
+   <button class="abtn sm" type="button" data-need="0" data-off="1" data-why="Đang Online: chụp thử sẽ chen vào lệnh của máy. Chuyển Offline trước." id="aSnap">Chụp thử</button>
+   <button class="abtn sm" type="button" data-need="0" data-off="1" data-why="Đang Online: Live chiếm camera. Chuyển Offline trước." id="aLive">Live</button>
+   <button class="conn" type="button" id="aConn"><span class="dot ${devOk===3?"ok":"ng"}"></span>Thiết bị ${devOk}/3 · <span class="dot ok"></span>Máy 1/1 · <span class="dot ok"></span>MES 1/1</button>`;
+  const on=$("#aOnline");
+  let t=null;
+  const start=()=>{on.style.outline="3px solid var(--sel)";t=setTimeout(()=>{on.style.outline="";S.online=!S.online;toast(S.online?"Đã Online: nhận lệnh từ máy.":"Đã Offline: máy sẽ nhận lỗi \"vision không sẵn sàng\" nếu gửi lệnh.");render()},1000)};
+  const stop=()=>{on.style.outline="";clearTimeout(t)};
+  on.onpointerdown=start; on.onpointerup=stop; on.onpointerleave=stop;
+  on.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();S.online=!S.online;render()}};
+  a.querySelectorAll("[data-need]").forEach(btn=>{
+    const blocked=(S.role<+btn.dataset.need)||(btn.dataset.off==="1"&&S.online);
+    btn.setAttribute("aria-disabled",blocked?"true":"false");
+    btn.onclick=()=>blocked?toast(btn.dataset.why):toast(btn.textContent.trim()+": đã thực hiện (mockup).");
+  });
+  $("#aConn").onclick=()=>{const p=$("#pop");p.hidden=!p.hidden;renderPop()};
+}
+function renderPop(){
+  const p=$("#pop");
+  p.innerHTML=`<div><h4>Thiết bị (machine.json)</h4>
+    ${DEVS.map(d=>{const bad=S.alarm&&d.role==="MainLight";return `<div class="it"><span class="dot ${bad?"ng":"ok"}"></span><b>${d.role}</b><span>${bad?"Mất kết nối · thử lại 8 s":esc(d.desc)}</span></div>`}).join("")}
+  </div><div><h4>Kết nối ngoài</h4>
+    <div class="it"><span class="dot ok"></span><b>Máy (PLC)</b><span>192.168.1.10 → :5000 · bản tin 2 s trước</span></div>
+    <div class="it"><span class="dot ok"></span><b>MES</b><span>CSV \\\\mes01 · ghi 14:32:07</span></div>
+    <div class="it"><span class="dot ok"></span><b>Ổ dữ liệu</b><span>D: còn 412 GB</span></div>
+  </div><footer>MeoVision 2.0.0 · VisionPro 9.0 CR2 · 42 tính năng có license · khởi động 08:00:12 (6,2 s)</footer>`;
+}
+let toastT=null;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3600)}
+function lockNote(need,offline){
+  if(S.role<need) return `<div class="lock-note">🔒 Chỉ xem — cần ${ROLES[need]} trở lên để thay đổi.</div>`;
+  if(offline&&S.online) return `<div class="lock-note">⏸ Đang Online — các thay đổi bị khoá để không chen vào lệnh của máy. Nhấn giữ nút ONLINE ở dưới để chuyển Offline.</div>`;
+  return "";
+}
+const canEdit=(need,offline)=>S.role>=need&&!(offline&&S.online);
+
+/* ---------- màn 1: Vận hành ---------- */
+function home(){
+  const empty=S.empty;
+  const sub=`<div class="subtabs" role="tablist">
+     ${[["cam","Camera"],["map","Sơ đồ vị trí"],["table","Bảng kết quả"]].map(([k,l])=>`<button class="subtab" role="tab" type="button" data-sub="${k}" aria-selected="${S.homeSub===k}">${l}</button>`).join("")}
+     <span style="margin-left:auto;align-self:center;padding-right:12px;font-size:12px" class="muted">Bố cục camera: machine.json → layout = "Dual"</span></div>`;
+  let work="";
+  if(S.homeSub==="cam"){
+    const tile=(role,cmd,res,ms,score,src)=>`<section class="cam" aria-label="${role}">
+      <div class="camh"><b>${role}</b><span>lệnh ${cmd}</span>${S.recall&&S.recall===role?'<span style="color:#ffb74d">· đang xem lại kết quả cũ</span>':""}
+        <span class="rv">${empty?'<span class="faint">—</span>':`<span>${ms} ms</span><span class="tag ${res.toLowerCase()}">${res}</span>`}</span></div>
+      <div class="camimg"><canvas data-cam="${role}" data-ng="${res==="NG"?1:0}" ${empty?'data-empty="1"':""}></canvas></div>
+      <div class="camf">${empty?"Chờ lệnh đầu tiên từ máy":`score ${score} · ${src}`}
+        <span class="hist" aria-label="16 kết quả gần nhất">${empty?"":Array.from({length:16},(_,i)=>{const ng=(role==="TopCam"&&(i===11||i===6))||(role==="BottomCam"&&i===3);return `<button type="button" class="${ng?"ng":"ok"} ${i===15?"cur":""}" data-recall="${role}" title="Kết quả ${16-i} lần trước"></button>`}).join("")}</span></div>
+    </section>`;
+    work=`<div class="cams" style="grid-template-columns:1fr 1fr">
+      ${tile("TopCam","T2",S.prompt?"NG":"OK",231,"0.93","2026-10-16_143205_T2.bmp")}
+      ${tile("BottomCam","B1","OK",161,"0.95","2026-10-16_143207_B1.bmp")}</div>`;
+  } else if(S.homeSub==="map"){
+    const cells=Array.from({length:50},(_,i)=>{const ng=[7,23,41].includes(i);const na=i>=46;return `<button type="button" class="${na?"na":ng?"ng":""} ${S.mapSel===i?"sel":""}" data-cell="${i}" title="Vị trí ${i+1}">${na?"":ng?"NG":"✓"}</button>`}).join("");
+    work=`<div class="card" style="flex:1"><h3>Khay 5 × 10 — lệnh T2 (nhiều vị trí trong một ảnh)<span class="r">46/50 vị trí có hàng</span></h3>
+      <div class="cbody" style="display:grid;grid-template-columns:1fr 420px;gap:16px">
+        <div><div class="map">${cells}</div>
+        <div class="legend" style="margin-top:12px"><span><i class="sw" style="background:var(--okbg);border:1px solid #cfcfcf"></i>OK</span><span><i class="sw" style="background:var(--ngbg);border:1px solid #e3a39a"></i>NG (màu theo lỗi đại diện)</span><span><i class="sw" style="background:var(--panel);border:1px solid #cfcfcf"></i>không có hàng</span></div></div>
+        <div class="col"><b>Vị trí ${S.mapSel+1}</b>
+          <table class="t"><tr><th>Mục kiểm</th><th class="num">Đo</th><th class="num">Khoảng</th><th></th></tr>
+          <tr><td>Ba via mép trái</td><td class="num">${[7,23,41].includes(S.mapSel)?"0.38":"0.07"} mm</td><td class="num">≤ 0.20</td><td class="res ${[7,23,41].includes(S.mapSel)?"ng":"ok"}">${[7,23,41].includes(S.mapSel)?"NG":"OK"}</td></tr>
+          <tr><td>Đường kính lỗ tâm</td><td class="num">6.02 mm</td><td class="num">5.95–6.05</td><td class="res ok">OK</td></tr>
+          <tr><td>Score định vị</td><td class="num">0.94</td><td class="num">≥ 0.70</td><td class="res ok">OK</td></tr></table>
+          <button class="btn sm" type="button" data-go="history">Mở ảnh của vị trí này</button></div>
+      </div></div>`;
+  } else {
+    work=`<div class="card" style="flex:1"><h3>Kết quả trong ca<span class="r">mới nhất ở trên</span></h3><div class="cbody" style="padding:0">${resultTable()}</div></div>`;
+  }
+  const last=empty?`<div class="empty">Chưa có kết quả trong ca.<br>Máy gửi lệnh tới cổng TCP :5000 là kết quả hiện ở đây. Muốn thử không cần máy: chuyển Offline → Chụp thử.</div>`:
+   `<div class="row" style="justify-content:space-between"><div><div class="muted" style="font-size:12px">Lệnh T2 · SN2610-0884${S.prompt?"0":"1"} · 14:32:05</div><div style="font-size:15px;font-weight:600">Kiểm mép & ba via</div></div>
+     <div class="res ${S.prompt?"ng":"ok"}" style="font-size:40px;line-height:1">${S.prompt?"NG":"OK"}</div></div>
+    <table class="t" style="margin-top:6px"><tr><th>Mục kiểm</th><th class="num">Đo</th><th class="num">Khoảng</th><th></th></tr>
+     <tr ${S.prompt?'class="ngrow"':""}><td>Ba via mép trái</td><td class="num">${S.prompt?"0.38":"0.11"} mm</td><td class="num">≤ 0.20</td><td class="res ${S.prompt?"ng":"ok"}">${S.prompt?"NG":"OK"}</td></tr>
+     <tr><td>Ba via mép phải</td><td class="num">0.06 mm</td><td class="num">≤ 0.20</td><td class="res ok">OK</td></tr>
+     <tr><td>Score định vị</td><td class="num">0.93</td><td class="num">≥ 0.70</td><td class="res ok">OK</td></tr>
+     <tr><td>Thời gian xử lý</td><td class="num">231 ms</td><td class="num">≤ 300</td><td class="muted">·</td></tr></table>`;
+  const k=empty?{t:0,ok:0,ng:0,y:"—",avg:"—",max:"—"}:{t:8841,ok:8792,ng:49,y:"99.45%",avg:"188",max:"246"};
+  return `<div class="col" style="flex:1;min-width:0">${sub}${work}</div>
+   <aside class="col" style="width:560px;flex:none">
+    <section class="card"><h3>Kết quả gần nhất<span class="r">bấm ô lịch sử dưới camera để xem lại</span></h3><div class="cbody">${last}</div></section>
+    <section class="card"><h3>Ca sáng · từ 06:00<span class="r">P1001</span></h3><div class="cbody"><div class="kpis">
+      <div class="kpi"><div class="l">Tổng</div><div class="v">${k.t}</div></div>
+      <div class="kpi ok"><div class="l">OK</div><div class="v">${k.ok}</div></div>
+      <div class="kpi ${k.ng?"ng":""}"><div class="l">NG</div><div class="v">${k.ng}</div></div>
+      <div class="kpi"><div class="l">Tỷ lệ OK</div><div class="v">${k.y}</div></div>
+      <div class="kpi"><div class="l">Xử lý TB</div><div class="v">${k.avg}<small style="font-size:13px"> ms</small></div><div class="s">ngân sách 300 ms</div></div>
+      <div class="kpi"><div class="l">Xử lý max</div><div class="v">${k.max}<small style="font-size:13px"> ms</small></div><div class="s">T1 14:31:59</div></div></div></div></section>
+    <section class="card"><h3>Lỗi hàng đầu trong ca</h3><div class="cbody">${empty?'<div class="empty">Chưa có NG trong ca.</div>':
+      [["Ba via mép trái",27],["Không tìm thấy mẫu (T1)",14],["Lỗ tâm lệch",8]].map(([n,c])=>`<div class="row" style="margin-bottom:6px"><span style="width:200px">${n}</span><div class="bar" style="flex:1"><i style="width:${c/27*100}%"></i></div><span class="num" style="width:40px">${c}</span></div>`).join("")}</div></section>
+    <section class="card" style="flex:1"><h3>Nhật ký<span class="r">${S.role>=1?"lọc: tất cả":"chỉ sự kiện vận hành"}</span></h3><div class="cbody mono" style="font-size:12px;line-height:1.7">
+      ${S.alarm?'<div style="color:var(--ng)">14:31:52 WRN MainLight mất kết nối — đang nối lại</div>':""}
+      <div>14:32:07 T1 OK 182 ms · B1 OK 161 ms</div><div style="color:var(--ng)">14:32:05 T2 NG Ba via 0.38 mm</div>
+      <div>14:20:11 Đổi sản phẩm → P1001 (máy gửi PRODUCT,P1001)</div><div>08:00:12 Khởi động xong 6,2 s · 3/3 thiết bị</div></div></section>
+   </aside>`;
+}
+function resultTable(sel){
+  return `<table class="t"><thead><tr><th>Thời điểm</th><th>Lệnh</th><th>Serial</th><th>KQ</th><th class="num">Score</th><th>Chi tiết</th><th class="num">ms</th></tr></thead><tbody>
+  ${RES.map((r,i)=>`<tr class="${r[3]==="NG"?"ngrow":""} ${sel===i?"sel":""}" data-row="${i}" style="cursor:pointer"><td class="mono">${r[0]}</td><td>${r[1]}</td><td class="mono">${r[2]}</td><td class="res ${r[3].toLowerCase()}">${r[3]}</td><td class="num">${r[4]}</td><td>${esc(r[5])}</td><td class="num">${r[6]}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* ---------- màn 2: Lịch sử & ảnh ---------- */
+function history(){
+  const r=RES[S.histSel];
+  return `<div class="col" style="flex:1;min-width:0">
+    <div class="card"><div class="cbody row" style="flex-wrap:wrap">
+      <label class="field" for="fDate">Ngày<input id="fDate" value="16/10/2026"></label>
+      <label class="field" for="fProd">Sản phẩm<select id="fProd"><option>P1001 · Nắp nhôm</option><option>Tất cả</option></select></label>
+      <label class="field" for="fCmd">Lệnh / camera<select id="fCmd"><option>Tất cả</option><option>T1 · TopCam</option><option>T2 · TopCam</option><option>B1 · BottomCam</option></select></label>
+      <label class="field" for="fRes">Kết quả<select id="fRes"><option>Chỉ NG</option><option>Tất cả</option></select></label>
+      <label class="field" for="fWhy">Lý do<select id="fWhy"><option>Tất cả lý do</option><option>Ba via mép trái</option><option>Không tìm thấy mẫu</option></select></label>
+      <label class="field" for="fSn">Serial<input id="fSn" placeholder="quét hoặc gõ serial"></label>
+      <span style="flex:1"></span><button class="btn" type="button">Xuất CSV</button></div></div>
+    <div class="card" style="flex:1"><h3>8 kết quả (ví dụ)<span class="r">ảnh lưu theo chính sách: NG + 1/100 OK</span></h3><div class="cbody" style="padding:0">${resultTable(S.histSel)}</div></div>
+   </div>
+   <aside class="col" style="width:760px;flex:none">
+    <section class="cam" style="flex:1;min-height:0"><div class="camh"><b>${r[1]==="B1"?"BottomCam":"TopCam"}</b><span>${r[0]} · ${r[2]}</span><span class="rv"><span class="tag ${r[3].toLowerCase()}">${r[3]}</span></span></div>
+      <div class="tool" style="background:#2a2a2a;border-color:#333"><button type="button" aria-pressed="true">Overlay</button><button type="button">Vừa khung</button><button type="button">100%</button><button type="button">Giá trị xám</button><span class="sp"></span><span style="color:#aaa;font-size:12px">ảnh gốc · không nén (TIFF LZW)</span></div>
+      <div class="camimg"><canvas data-cam="${r[1]==="B1"?"BottomCam":"TopCam"}" data-ng="${r[3]==="NG"?1:0}"></canvas></div></section>
+    <section class="card"><h3>Chi tiết</h3><div class="cbody"><div style="margin-bottom:8px">${esc(r[5])} · score ${r[4]} · ${r[6]} ms · job Inspect.vpp (bản 2026-10-12 09:40)</div>
+      <div class="row" style="flex-wrap:wrap">
+       <button class="btn sm" type="button" data-need="2" data-why="Cần Kỹ sư để mở ảnh trong Thiết lập ảnh.">Mở trong Thiết lập ảnh</button>
+       <button class="btn sm" type="button" data-need="2" data-off="1" data-why="Chạy lại dùng camera ảo và job hiện tại — cần Kỹ sư và Offline.">Chạy lại với job hiện tại</button>
+       <button class="btn sm" type="button" data-need="1" data-why="Cần Trưởng ca trở lên.">Đánh dấu "NG giả" để xem lại</button>
+       <button class="btn sm" type="button" data-need="0">Tạo gói chẩn đoán…</button></div></div></section>
+   </aside>`;
+}
+
+/* ---------- màn 3: Thống kê ---------- */
+function stats(){
+  const W=880,H=220,pad=34;
+  const score=[.95,.96,.95,.94,.95,.93,.94,.92,.93,.91,.92,.90,.91,.89,.90,.88,.89,.87];
+  const sx=i=>pad+i*(W-pad*2)/(score.length-1), sy=v=>H-pad-(v-.6)/(1-.6)*(H-pad*1.8);
+  const pts=score.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ");
+  const avg=score.map((_,i)=>{const s=score.slice(Math.max(0,i-4),i+1);return s.reduce((a,b)=>a+b)/s.length});
+  const pAvg=avg.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ");
+  const yields=[99.8,99.6,99.7,99.5,99.2,99.4,98.9,99.1];
+  return `<div class="col" style="flex:1;min-width:0">
+   <div class="card"><div class="cbody row" style="flex-wrap:wrap">
+     <label class="field" for="sRange">Khoảng<select id="sRange"><option>Ca hiện tại</option><option>24 giờ</option><option>7 ngày</option></select></label>
+     <label class="field" for="sCmd">Lệnh<select id="sCmd"><option>T2 · Kiểm mép</option><option>T1</option><option>B1</option></select></label>
+     <label class="field" for="sMetric">Chỉ số<select id="sMetric"><option>Score định vị</option><option>Ba via max (mm)</option><option>Thời gian xử lý</option></select></label></div></div>
+   <section class="card"><h3>Xu hướng score — T2 (trung bình trượt 5 điểm)<span class="r">phát hiện trôi TRƯỚC khi NG hàng loạt</span></h3><div class="cbody" style="overflow:visible">
+     <svg class="svgchart" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Xu hướng score">
+       <rect x="${pad}" y="${sy(.75)}" width="${W-pad*2}" height="${sy(.70)-sy(.75)}" fill="#FFF1D6"/>
+       ${[.6,.7,.8,.9,1].map(v=>`<line x1="${pad}" x2="${W-pad}" y1="${sy(v)}" y2="${sy(v)}" stroke="#e3e3e3"/><text x="4" y="${sy(v)+4}">${v.toFixed(1)}</text>`).join("")}
+       <line x1="${pad}" x2="${W-pad}" y1="${sy(.7)}" y2="${sy(.7)}" stroke="#C0392B" stroke-dasharray="5 4"/><text x="${W-pad-110}" y="${sy(.7)+14}" style="fill:#C0392B">ngưỡng chấp nhận 0.70</text>
+       <text x="${W-pad-150}" y="${sy(.75)-4}" style="fill:#B26A00">vùng cảnh báo sớm 0.70–0.75</text>
+       <polyline points="${pts}" fill="none" stroke="#9A9A9A" stroke-width="1.5"/>
+       <polyline points="${pAvg}" fill="none" stroke="#1565C0" stroke-width="3"/>
+       <circle cx="${sx(score.length-1)}" cy="${sy(avg[avg.length-1])}" r="5" fill="#1565C0"/>
+       ${["06:00","08:00","10:00","12:00","14:00"].map((t,i)=>`<text x="${pad+i*(W-pad*2)/4-14}" y="${H-8}">${t}</text>`).join("")}
+     </svg>
+     <div class="legend"><span><i class="sw" style="background:#9A9A9A"></i>từng lần</span><span><i class="sw" style="background:#1565C0"></i>trung bình trượt</span><span>Xu hướng giảm 0.008/giờ — dự báo chạm 0.75 sau ~14 giờ</span></div></div></section>
+   <div class="row" style="align-items:stretch;flex:1;min-height:0">
+    <section class="card" style="flex:1"><h3>Tỷ lệ OK theo giờ</h3><div class="cbody">
+      <svg class="svgchart" viewBox="0 0 420 200" width="100%" height="200" role="img" aria-label="Tỷ lệ OK theo giờ">
+       ${yields.map((y,i)=>{const h=(y-98)/2*150;return `<rect x="${30+i*48}" y="${170-h}" width="32" height="${h}" fill="${y<99.3?"#C0392B":"#9A9A9A"}"/><text x="${30+i*48}" y="${165-h}">${y}</text><text x="${34+i*48}" y="190">${6+i}h</text>`}).join("")}
+       <line x1="24" x2="410" y1="${170-(99.3-98)/2*150}" y2="${170-(99.3-98)/2*150}" stroke="#B26A00" stroke-dasharray="4 4"/>
+      </svg><div class="muted" style="font-size:12px">Cột đỏ: dưới mục tiêu 99.3% (cấu hình sản phẩm).</div></div></section>
+    <section class="card" style="flex:1"><h3>Pareto lỗi NG</h3><div class="cbody">
+      ${[["Ba via mép trái",27,"T2"],["Không tìm thấy mẫu",14,"T1"],["Lỗ tâm lệch",8,"T2"],["Thiếu dấu",2,"B1"]].map(([n,c,cmd])=>`<div class="row" style="margin-bottom:8px"><span style="width:180px">${n} <span class="faint">${cmd}</span></span><div class="bar" style="flex:1"><i style="width:${c/27*100}%"></i></div><span class="num" style="width:40px">${c}</span></div>`).join("")}
+      <div class="muted" style="font-size:12px;margin-top:8px">Nhiều lỗi trong một ảnh: tính lỗi đại diện theo thứ tự ưu tiên (Hệ thống → Giới hạn & ưu tiên).</div></div></section>
+   </div></div>
+   <aside class="col" style="width:460px;flex:none">
+    <section class="card"><h3>Giới hạn dừng máy<span class="r">đếm NG để chặn NG hàng loạt</span></h3><div class="cbody">
+      <table class="t"><tr><th>Quy tắc</th><th class="num">Hiện tại</th><th class="num">Giới hạn</th></tr>
+       <tr ${S.prompt?'class="ngrow"':""}><td>T2 NG liên tiếp</td><td class="num">${S.prompt?5:1}</td><td class="num">5</td></tr>
+       <tr><td>T2 NG trong 200 sp gần nhất</td><td class="num">7</td><td class="num">10</td></tr>
+       <tr><td>T1 không tìm thấy mẫu / 100 sp</td><td class="num">2</td><td class="num">5</td></tr></table></div></section>
+    <section class="card"><h3>Thời gian xử lý (T2)</h3><div class="cbody">
+      ${[["TB",188],["P95",236],["Max",246]].map(([l,v])=>`<div class="row" style="margin-bottom:8px"><span style="width:50px">${l}</span><div class="bar" style="flex:1"><i style="width:${v/300*100}%"></i></div><span class="num" style="width:70px">${v} ms</span></div>`).join("")}
+      <div class="muted" style="font-size:12px">Thang đo = ngân sách 300 ms của lệnh (Chương 15 §15.2).</div></div></section>
+    <section class="card" style="flex:1"><h3>Theo lô / ca</h3><div class="cbody" style="padding:0"><table class="t"><tr><th>Ca</th><th class="num">Tổng</th><th class="num">NG</th><th class="num">OK %</th></tr>
+      <tr><td>16/10 sáng</td><td class="num">8 841</td><td class="num">49</td><td class="num">99.45</td></tr>
+      <tr><td>15/10 đêm</td><td class="num">10 204</td><td class="num">38</td><td class="num">99.63</td></tr>
+      <tr><td>15/10 chiều</td><td class="num">9 977</td><td class="num">41</td><td class="num">99.59</td></tr></table></div></section>
+   </aside>`;
+}
+
+/* ---------- màn 4: Sản phẩm ---------- */
+function product(){
+  const ed=canEdit(2,true), act=canEdit(1,true);
+  const P=[["P1001","Nắp nhôm","Đang chạy · 4 lệnh",true],["P1002","Nắp thép phủ","4 lệnh · sửa 12/10",false],["P1015","Khung nhựa","2 lệnh · thiếu vai trò SideCam",false]];
+  return `<aside class="col" style="width:360px;flex:none">
+    <section class="card" style="flex:1"><h3>Sản phẩm trên máy này<span class="r">%ProgramData%\\MeoVision\\products</span></h3><div class="cbody col">
+      ${P.map((p,i)=>`<button type="button" class="pcard" data-prod="${i}" aria-selected="${S.prodSel===i}"><b>${p[0]} · ${p[1]}</b><span class="${i===2?"res ng":"muted"}" style="font-weight:400">${p[2]}</span>${p[3]?'<span class="res ok" style="font-size:12px">● đang chạy</span>':""}</button>`).join("")}
+      <div class="empty" style="margin-top:auto">Chép một thư mục sản phẩm từ máy cùng loại vào đây rồi bấm "Quét lại" — phần mềm kiểm vai trò thiết bị trước khi cho kích hoạt.</div>
+      <button class="btn" type="button" data-need="2" data-why="Cần Kỹ sư để tạo sản phẩm.">+ Nhân bản thành sản phẩm mới</button></div></section></aside>
+   <div class="col" style="flex:1;min-width:0">
+    ${lockNote(1,true)}
+    <section class="card"><h3>P1001 · Nắp nhôm<span class="r">product.json · schemaVersion 1 · sửa 12/10/2026 09:40 bởi kysu.an</span></h3><div class="cbody row" style="flex-wrap:wrap;gap:18px">
+      <span>Vai trò cần dùng:</span>${["TopCam","BottomCam","MainLight"].map(r=>`<span class="row" style="gap:6px"><span class="dot ${S.alarm&&r==="MainLight"?"ng":"ok"}"></span>${r}</span>`).join("")}
+      <span class="muted">· Kiểm toàn bộ: <b class="res ok">0 lỗi</b>, 1 cảnh báo (vị trí chuẩn dạy trên máy AOI-01)</span>
+      <span style="flex:1"></span>
+      <button class="btn pri" type="button" ${act?"":'aria-disabled="true"'} data-why="${S.role<1?"Cần Trưởng ca trở lên.":"Đang Online — máy có thể gửi lệnh giữa lúc đổi sản phẩm. Chuyển Offline, hoặc để máy tự đổi bằng bản tin PRODUCT."}">Kích hoạt sản phẩm này</button></div></section>
+    <section class="card" style="flex:1"><h3>Bảng lệnh (máy gửi mã lệnh → phần mềm chạy dòng tương ứng)<span class="r">${ed?"bấm ô để sửa":"chỉ xem"}</span></h3><div class="cbody" style="padding:0">
+      <table class="t"><thead><tr><th>Mã</th><th>Tên</th><th>Camera (vai trò)</th><th>Job</th><th class="num">Exposure ms</th><th>Đèn (kênh=mức)</th><th class="num">Timeout</th><th class="num">Thử lại</th><th>Output trả về máy</th><th>Lưu ảnh</th></tr></thead><tbody>
+      ${CMDS.map(c=>`<tr><td class="mono"><b>${c.code}</b></td><td>${c.name}</td><td>${c.cam}</td><td class="mono" style="font-size:12px">${c.job}</td><td class="num">${c.exp}</td><td class="mono" style="font-size:12px">${c.light}</td><td class="num">${c.to}</td><td class="num">${c.retry}</td><td class="mono" style="font-size:12px">${c.outs}</td><td>${c.save}</td></tr>`).join("")}</tbody></table>
+      <div style="padding:10px 12px" class="row"><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline để sửa bảng lệnh.">+ Thêm lệnh</button><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Kiểm job & terminal</button><span class="muted" style="font-size:12px">Bản tin ví dụ: <span class="mono">T1,SN2610-08841,42</span> → <span class="mono">T1,SN2610-08841,42,OK,12.031,-4.112,0.42</span></span></div></div></section>
+    <div class="row" style="align-items:stretch">
+     <section class="card" style="flex:1"><h3>Ngưỡng & dung sai ngoài job</h3><div class="cbody">
+       <table class="t"><tr><th>Mục</th><th class="num">Min</th><th class="num">Max</th><th>Đơn vị</th><th>Bật</th></tr>
+       <tr><td>Ba via mép</td><td class="num">—</td><td class="num">0.20</td><td>mm</td><td>✓</td></tr>
+       <tr><td>Đường kính lỗ tâm</td><td class="num">5.95</td><td class="num">6.05</td><td>mm</td><td>✓</td></tr>
+       <tr><td>Score định vị</td><td class="num">0.70</td><td class="num">—</td><td></td><td>✓</td></tr></table></div></section>
+     <section class="card" style="flex:1"><h3>Phiên bản & sao lưu</h3><div class="cbody" style="padding:0"><table class="t"><tr><th>Thời điểm</th><th>Ai</th><th>Thay đổi</th><th></th></tr>
+       <tr><td class="mono">12/10 09:40</td><td>kysu.an</td><td>Inspect.vpp: train lại mẫu mép</td><td><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Khôi phục cần Kỹ sư và Offline.">Khôi phục</button></td></tr>
+       <tr><td class="mono">03/10 15:12</td><td>kysu.an</td><td>Ba via max 0.25 → 0.20</td><td><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Khôi phục cần Kỹ sư và Offline.">Khôi phục</button></td></tr></table></div></section>
+    </div></div>`;
+}
+
+/* ---------- màn 5: Thiết bị ---------- */
+function devices(){
+  const d=DEVS[S.devSel]; const bad=S.alarm&&d.role==="MainLight"; const ed=canEdit(2,true);
+  return `<div class="col" style="flex:1;min-width:0">
+    <section class="card"><h3>Thiết bị của máy (machine.json · AOI-02)<span class="r">kiểm lúc nạp: 0 lỗi</span></h3><div class="cbody" style="padding:0">
+     <table class="t"><thead><tr><th>Vai trò</th><th>Loại</th><th>Thiết bị thật</th><th>Trạng thái</th><th>Chi tiết</th><th></th></tr></thead><tbody>
+     ${DEVS.map((x,i)=>{const b=S.alarm&&x.role==="MainLight";return `<tr class="${S.devSel===i?"sel":""}" data-dev="${i}" style="cursor:pointer"><td><b>${x.role}</b></td><td class="mono">${x.type}</td><td>${x.desc}</td><td><span class="row" style="gap:6px"><span class="dot ${b?"ng":"ok"}"></span>${b?"Faulted":"Connected"}</span></td><td class="${b?"res ng":"muted"}" style="font-weight:${b?600:400}">${b?"Không phản hồi sau 1000 ms · lần thử 3 sau 8 s":x.detail}</td><td><button class="btn sm" type="button" data-need="1" data-why="Cần Trưởng ca trở lên.">Kết nối lại ngay</button></td></tr>`}).join("")}</tbody></table></div></section>
+    <section class="card" style="flex:1"><h3>Kết nối với máy — server TCP :5000<span class="r">bản tin thô (giữ 1000 dòng gần nhất, lưu được để gửi hỗ trợ)</span></h3><div class="cbody col">
+     <div class="row"><span class="dot ok"></span>Client 192.168.1.10:51344 · kết nối từ 06:00:03 · 8 841 lệnh · lệnh gần nhất 2 s trước<span style="flex:1"></span><button class="btn sm" type="button">Tạm dừng cuộn</button><button class="btn sm" type="button">Lưu log</button></div>
+     <div class="raw" style="flex:1">
+      <div><span class="faint">14:32:07.731</span> <span class="in">◀ T1,SN2610-08841,42</span></div>
+      <div><span class="faint">14:32:07.912</span> <span class="out">▶ T1,SN2610-08841,42,OK,12.031,-4.112,0.42</span> <span class="faint">181 ms</span></div>
+      <div><span class="faint">14:32:07.480</span> <span class="in">◀ B1,SN2610-08841,41</span></div>
+      <div><span class="faint">14:32:07.640</span> <span class="out">▶ B1,SN2610-08841,41,OK,0.118,-0.044,-0.10</span> <span class="faint">160 ms</span></div>
+      <div><span class="faint">14:32:04.887</span> <span class="in">◀ T2,SN2610-08840,40</span></div>
+      <div><span class="faint">14:32:05.118</span> <span class="err">▶ T2,SN2610-08840,40,NG,EDGE_BURR</span> <span class="faint">231 ms</span></div>
+      <div><span class="faint">14:20:11.002</span> <span class="in">◀ PRODUCT,P1001</span> <span class="out">▶ PRODUCT,P1001,OK</span></div>
+     </div></div></section></div>
+   <aside class="col" style="width:620px;flex:none">
+    ${d.type==="CognexGigE"?`<section class="cam" style="height:380px;flex:none"><div class="camh"><b>${d.role}</b><span>${d.desc}</span><span class="rv">${S.online?'<span class="faint">ảnh chụp gần nhất</span>':'<span>Live 18 fps</span>'}</span></div><div class="camimg"><canvas data-cam="${d.role}" data-ng="0"></canvas></div></section>
+     <section class="card"><h3>Thử camera</h3><div class="cbody col">${lockNote(2,true)}
+      <label class="field" for="dExp">Exposure (ms) — chỉ để thử; giá trị dùng khi chạy nằm trong bảng lệnh<input id="dExp" value="8.0" ${ed?"":"disabled"}></label>
+      <div class="row"><button class="btn" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Chụp thử</button><button class="btn" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Live</button><button class="btn" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Lưu ảnh làm mẫu</button></div></div></section>`:
+     `<section class="card"><h3>${d.role} · ${d.desc}<span class="r">${bad?'<span class="res ng">Faulted</span>':"Connected"}</span></h3><div class="cbody col">${lockNote(2,true)}
+      ${["A","B","C","D"].map((ch,i)=>`<label class="field" for="lc${i}">Kênh ${ch} · ${[180,0,255,40][i]}/255<input type="range" id="lc${i}" min="0" max="255" value="${[180,0,255,40][i]}" ${ed&&!bad?"":"disabled"}></label>`).join("")}
+      <div class="muted" style="font-size:12px">Giao thức: <span class="mono">S{channel}{value:0000}#</span> · trả lời: không · lệnh hỏi trạng thái: <span class="mono">Q#</span></div>
+      <div class="row"><button class="btn" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Tắt tất cả kênh</button><button class="btn" type="button" data-need="1" data-why="Cần Trưởng ca trở lên.">Kết nối lại ngay</button></div></div></section>`}
+    <section class="card" style="flex:1"><h3>Lịch sử trạng thái — ${d.role}</h3><div class="cbody mono" style="font-size:12px;line-height:1.7">
+     ${bad?'<div style="color:var(--ng)">14:31:52 Connected → Faulted · không phản hồi 1000 ms</div><div>14:31:54 thử lần 2 · lỗi</div>':""}<div>08:00:10 Closed → Connected · ${d.desc}</div></div></section>
+   </aside>`;
+}
+
+/* ---------- màn 6: Thiết lập ảnh (teach + chạy thử) ---------- */
+function setup(){
+  const ed=canEdit(2,true);
+  const steps=[["Đèn & exposure","Mức đèn từng kênh, exposure — xem histogram"],["Vùng tìm (ROI)","Kéo khung trên ảnh"],["Mẫu định vị","Train PatMax, xem điểm số mẫu"],["Mục kiểm & dung sai","Bật/tắt mục, min–max, đơn vị"],["Chạy thử bộ ảnh","Ảnh mẫu có nhãn OK/NG — phải khớp hết"],["Lưu","Tự sao lưu .vpp cũ + ghi lý do thay đổi"]];
+  return `<aside class="col" style="width:340px;flex:none">
+    <section class="card"><h3>Lệnh đang thiết lập</h3><div class="cbody col">
+      <label class="field" for="sLenh">Sản phẩm · lệnh<select id="sLenh"><option>P1001 · T2 Kiểm mép & ba via</option><option>P1001 · T1 Định vị nắp</option></select></label>
+      <div class="muted" style="font-size:12px">Job <span class="mono">jobs/Inspect.vpp</span> · camera TopCam · output OK, Code</div></div></section>
+    <section class="card"><h3>Nguồn ảnh</h3><div class="cbody col">
+      <div class="row" role="radiogroup" aria-label="Nguồn ảnh"><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Live cần Offline.">Live</button><button class="btn sm" type="button" data-need="2" data-off="1" data-why="Chụp cần Offline.">Chụp 1 ảnh</button><button class="btn sm pri" type="button">Ảnh mẫu</button></div>
+      <div class="muted" style="font-size:12px">Đang xem: <b>ảnh mẫu</b> samples/T2/ (48 ảnh · 40 OK, 8 NG có nhãn). Luôn ghi rõ đang xem ảnh gốc hay ảnh qua bước nào.</div></div></section>
+    <section class="card" style="flex:1"><h3>Các bước teach</h3><div class="cbody steps">
+      ${steps.map((s,i)=>`<button type="button" class="step ${i<S.setupStep?"done":""} ${i===S.setupStep?"cur":""}" data-step="${i}"><span class="n">${i<S.setupStep?"✓":i+1}</span><span><b>${s[0]}</b><small>${s[1]}</small></span></button>`).join("")}</div></section></aside>
+   <div class="col" style="flex:1;min-width:0">
+    ${lockNote(2,true)}
+    <section class="cam" style="flex:1;min-height:0">
+     <div class="tool"><button type="button" aria-pressed="true">Overlay</button><button type="button">Vừa khung</button><button type="button">100%</button><button type="button" aria-pressed="false">Giá trị xám</button><button type="button">Xem ngưỡng nhị phân</button><span class="sp"></span><span class="muted" style="font-size:12px">ảnh: samples/T2/ng_003.bmp · nhãn NG · bước đang xem: Kết quả cuối</span></div>
+     <div class="camimg"><canvas data-cam="TopCam" data-ng="1"></canvas></div>
+     <div class="camf" style="gap:6px;overflow:hidden">${Array.from({length:22},(_,i)=>`<span style="width:40px;height:26px;flex:none;background:${[3,9,15].includes(i)?"#5a2a26":"#3a3a3a"};border:${i===3?"2px solid #fff":"1px solid #555"}"></span>`).join("")}<span style="margin-left:auto">◀ ▶ ảnh 4/48</span></div></section>
+   </div>
+   <aside class="col" style="width:560px;flex:none">
+    <section class="card" style="flex:1"><h3>Bước 4 · Mục kiểm & dung sai</h3><div class="cbody">
+     <table class="t"><tr><th>Bật</th><th>Mục kiểm</th><th class="num">Đo (ảnh này)</th><th class="num">Min</th><th class="num">Max</th><th>Đơn vị</th></tr>
+      <tr class="ngrow"><td>✓</td><td>Ba via mép trái</td><td class="num">0.38</td><td class="num">—</td><td class="num"><input aria-label="max ba via" value="0.20" style="width:64px;height:32px" ${ed?"":"disabled"}></td><td>mm</td></tr>
+      <tr><td>✓</td><td>Ba via mép phải</td><td class="num">0.06</td><td class="num">—</td><td class="num">0.20</td><td>mm</td></tr>
+      <tr><td>✓</td><td>Đường kính lỗ tâm</td><td class="num">6.02</td><td class="num">5.95</td><td class="num">6.05</td><td>mm</td></tr>
+      <tr><td class="faint">—</td><td class="faint">Trầy bề mặt (tắt)</td><td class="num faint">—</td><td class="num faint">—</td><td class="num faint">—</td><td class="faint">mm²</td></tr></table>
+     <div class="muted" style="font-size:12px;margin-top:8px">Tắt một mục kiểm hay nới dung sai có thể cho hàng NG đi qua — thay đổi được ghi vào nhật ký kiểm toán.</div></div></section>
+    <section class="card"><h3>Chạy thử trên 48 ảnh mẫu<span class="r">lần chạy 14:28 · 3,9 s</span></h3><div class="cbody">
+     <div class="kpis"><div class="kpi ok"><div class="l">Khớp nhãn</div><div class="v">47/48</div></div><div class="kpi ng"><div class="l">NG giả (OK→NG)</div><div class="v">1</div><div class="s">ok_031.bmp</div></div><div class="kpi"><div class="l">Lọt (NG→OK)</div><div class="v">0</div></div></div>
+     <div class="row" style="margin-top:10px"><button class="btn" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Chạy tất cả</button><button class="btn" type="button">Xem ảnh lệch nhãn</button></div></div></section>
+    <section class="card"><h3>Công cụ sâu</h3><div class="cbody row" style="flex-wrap:wrap">
+     <button class="btn" type="button" data-need="2" data-off="1" data-why="Trình chỉnh ToolBlock gốc của Cognex chỉ dành cho Kỹ sư, khi Offline.">Mở trình chỉnh ToolBlock (Cognex)…</button>
+     <span class="muted" style="font-size:12px">Mở trên BẢN SAO; lưu đè cần chạy thử lại bộ ảnh mẫu và tự sao lưu bản cũ.</span></div></section>
+   </aside>`;
+}
+
+/* ---------- màn 7: Hiệu chuẩn ---------- */
+function calib(){
+  const pts=Array.from({length:9},(_,i)=>i);
+  return `<aside class="col" style="width:420px;flex:none">
+    <section class="card" style="flex:1"><h3>Hiệu chuẩn của máy (theo camera vật lý)</h3><div class="cbody col">
+     <button type="button" class="pcard" aria-selected="true"><b>TopCam · 9 điểm + tâm xoay</b><span class="muted">12/10/2026 · RMS 0.53 px (≤ 1.0) · r tâm xoay 41.8 mm</span><span class="res ok" style="font-size:12px">còn hạn — kiểm lại sau 18 ngày</span></button>
+     <button type="button" class="pcard"><b>BottomCam · 9 điểm</b><span class="muted">01/09/2026 · RMS 0.61 px</span><span class="res ng" style="font-size:12px">quá hạn kiểm lại 15 ngày</span></button>
+     <button type="button" class="pcard"><b>Ánh xạ TopCam ↔ BottomCam</b><span class="muted">104 cặp điểm · 12/10/2026</span></button>
+     <div class="empty">Thay camera, ống kính hay đồ gá? Bấm "Đã thay thiết bị" để đánh dấu hiệu chuẩn cũ không còn tin được.</div>
+     <button class="btn" type="button" data-need="2" data-why="Cần Kỹ sư.">Đã thay thiết bị…</button></div></section></aside>
+   <div class="col" style="flex:1;min-width:0">
+    ${lockNote(2,true)}
+    <section class="card"><div class="cbody steps" style="flex-direction:row">
+      ${["Chuẩn bị","Máy dẫn 9 điểm","Xoay trục U","Kết quả","Lưu"].map((s,i)=>`<button type="button" class="step ${i<1?"done":""} ${i===1?"cur":""}" style="flex:1"><span class="n">${i<1?"✓":i+1}</span><span><b>${s}</b></span></button>`).join("")}</div></section>
+    <div class="row" style="flex:1;min-height:0;align-items:stretch">
+     <section class="cam" style="flex:1"><div class="camh"><b>TopCam</b><span>điểm 6/9 · máy ở X=+2.000 Y=0.000</span><span class="rv">bản tin <span class="mono">CN,1,6</span></span></div><div class="camimg"><canvas data-cam="BottomCam" data-ng="0"></canvas></div></section>
+     <section class="card" style="width:520px;flex:none"><h3>Tiến trình (máy dẫn, vision chụp)</h3><div class="cbody">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${pts.map(i=>`<div style="height:64px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;background:${i<5?"var(--okbg)":i===5?"var(--infobg)":"var(--panel)"}"><b>${i+1}</b><span class="muted">${i<5?"đã chụp":i===5?"đang chụp":"chờ"}</span></div>`).join("")}</div>
+      <table class="t" style="margin-top:10px"><tr><th>Điểm</th><th class="num">Máy X,Y (mm)</th><th class="num">Ảnh x,y (px)</th></tr>
+       <tr><td>1</td><td class="num">−2.000, −2.000</td><td class="num">995.2, 795.8</td></tr><tr><td>5</td><td class="num">0.000, 0.000</td><td class="num">1224.1, 1023.7</td></tr></table>
+      <div class="muted" style="font-size:12px;margin-top:8px">Sau bước Kết quả: RMS ≤ ngưỡng → áp tự động (1 chạm); vượt → nhánh hướng dẫn chỉnh tay rồi đo lại. Ảnh từng điểm được lưu cạnh kết quả.</div>
+      <div class="row" style="margin-top:8px"><button class="btn" type="button" data-need="2" data-why="Cần Kỹ sư.">Huỷ hiệu chuẩn</button></div></div></section></div>
+    <section class="card"><h3>Vị trí chuẩn (golden) của sản phẩm P1001</h3><div class="cbody row" style="flex-wrap:wrap;gap:24px">
+     <span>Ảnh: X 1224.1 · Y 1023.7 · U 0.00°</span><span>Máy: X 152.300 · Y 88.150 · U 0.00°</span><span class="res ng" style="font-weight:600">Dạy trên máy AOI-01 — nên dạy lại trên máy này</span>
+     <button class="btn sm" type="button" data-need="2" data-off="1" data-why="Cần Kỹ sư và Offline.">Dạy lại vị trí chuẩn</button></div></section></div>`;
+}
+
+/* ---------- màn 8: Hệ thống ---------- */
+function system(){
+  const subs=[["users","Người dùng & quyền"],["images","Lưu ảnh & ổ đĩa"],["limits","Giới hạn dừng & ưu tiên lỗi"],["backup","Sao lưu & khôi phục"],["display","Ngôn ngữ & hiển thị"],["diag","Chẩn đoán & phiên bản"]];
+  let body="";
+  if(S.sysSub==="users"){
+    const F=[["Xem Vận hành, Lịch sử, Thống kê",1,1,1,1],["ACK cảnh báo, tạo gói chẩn đoán",1,1,1,1],["Đặt lại bộ đếm ca, cho chạy tiếp sau NG liên tiếp",0,1,1,1],["Kích hoạt sản phẩm, kết nối lại thiết bị",0,1,1,1],["Online ↔ Offline",0,1,1,1],["Teach, sửa bảng lệnh & dung sai, hiệu chuẩn",0,0,1,1],["Mở trình chỉnh ToolBlock Cognex",0,0,1,1],["Người dùng, lưu ảnh, giới hạn dừng, sao lưu",0,0,0,1]];
+    body=`<section class="card" style="flex:1"><h3>Quyền theo vai trò<span class="r">mỗi người một tài khoản — nâng quyền = đăng nhập tài khoản khác, không chia mật khẩu</span></h3><div class="cbody" style="padding:0">
+      <table class="t matrix"><tr><th>Chức năng</th>${ROLES.map(r=>`<th style="text-align:center">${r}</th>`).join("")}</tr>${F.map(f=>`<tr><td>${f[0]}</td>${f.slice(1).map(v=>`<td class="${v?"y":"n"}">${v?"✓":"—"}</td>`).join("")}</tr>`).join("")}</table></div></section>
+     <section class="card"><h3>Tài khoản</h3><div class="cbody" style="padding:0"><table class="t"><tr><th>Tên</th><th>Vai trò</th><th>Đăng nhập gần nhất</th><th></th></tr>
+      ${ROLE_USERS.map((u,i)=>`<tr><td class="mono">${u}</td><td>${ROLES[i]}</td><td class="mono">16/10 ${["06:01","06:00","13:58","09:12"][i]}</td><td><button class="btn sm" type="button">Đặt lại mật khẩu</button></td></tr>`).join("")}</table>
+      <div class="muted" style="padding:10px 12px;font-size:12px">Tự đăng xuất về Vận hành sau 10 phút không thao tác. Không khoá tài khoản khi gõ sai (máy sản xuất ưu tiên dùng được); mọi lần nâng quyền đều ghi kiểm toán.</div></div></section>`;
+  } else if(S.sysSub==="images"){
+    body=`<section class="card"><h3>Chính sách lưu ảnh</h3><div class="cbody" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <label class="field" for="i1">Ảnh NG<select id="i1"><option>Luôn lưu</option></select></label>
+      <label class="field" for="i2">Ảnh OK<select id="i2"><option>1 trên 100</option><option>Không lưu</option><option>Tất cả</option></select></label>
+      <label class="field" for="i3">Định dạng<select id="i3"><option>TIFF nén LZW (không mất dữ liệu)</option><option>BMP</option><option>JPEG (chỉ xem, không chạy lại được)</option></select></label>
+      <label class="field" for="i4">Giữ ảnh (ngày)<input id="i4" value="30"></label>
+      <label class="field" for="i5">Dung lượng tối đa (GB)<input id="i5" value="300"></label>
+      <label class="field" for="i6">Cảnh báo khi ổ còn dưới (GB)<input id="i6" value="20"></label></div></section>
+     <section class="card"><h3>Ổ dữ liệu D:</h3><div class="cbody"><div class="bar" style="height:18px"><i style="width:58%"></i></div><div class="muted" style="font-size:12px;margin-top:6px">Ảnh 168 GB · kết quả CSV 2.1 GB · log 0.9 GB · còn trống 412 GB · xoá vòng tự động lúc 03:00</div></div></section>`;
+  } else if(S.sysSub==="limits"){
+    body=`<section class="card"><h3>Giới hạn dừng máy</h3><div class="cbody" style="padding:0"><table class="t"><tr><th>Lệnh</th><th>Quy tắc</th><th class="num">Giới hạn</th><th>Khi vượt</th></tr>
+      <tr><td>T2</td><td>NG liên tiếp</td><td class="num">5</td><td>Báo máy dừng + banner chờ Trưởng ca</td></tr>
+      <tr><td>T2</td><td>NG trong N sp gần nhất (N = 200)</td><td class="num">10</td><td>Cảnh báo, không dừng</td></tr>
+      <tr><td>T1</td><td>Không tìm thấy mẫu / 100 sp</td><td class="num">5</td><td>Báo máy dừng</td></tr></table></div></section>
+     <section class="card"><h3>Ưu tiên lỗi (một ảnh nhiều lỗi → lỗi đại diện)</h3><div class="cbody">${["Không tìm thấy mẫu","Thiếu dấu","Ba via mép","Lỗ tâm lệch","Trầy bề mặt"].map((n,i)=>`<div class="row" style="height:40px;border-bottom:1px solid #eee"><b style="width:30px">${i+1}</b><span style="flex:1">${n}</span><button class="btn sm" type="button">▲</button><button class="btn sm" type="button">▼</button></div>`).join("")}</div></section>`;
+  } else if(S.sysSub==="backup"){
+    body=`<section class="card"><h3>Sao lưu</h3><div class="cbody col"><div>Tự động mỗi ngày 02:00 → E:\\MeoVisionBackup (ổ vật lý khác) · giữ 14 bản · bản gần nhất 16/10 02:00 (1.2 GB, kiểm checksum OK)</div>
+      <div class="row"><button class="btn" type="button">Sao lưu ngay</button><button class="btn" type="button">Khôi phục từ bản…</button></div>
+      <div class="muted" style="font-size:12px">Gồm: machine.json, hiệu chuẩn, products/, users.json. Không gồm ảnh (quá lớn — theo chính sách lưu ảnh).</div></div></section>`;
+  } else if(S.sysSub==="display"){
+    body=`<section class="card"><h3>Ngôn ngữ & hiển thị</h3><div class="cbody" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <label class="field" for="g1">Ngôn ngữ giao diện<select id="g1"><option>Tiếng Việt</option><option>English</option><option>中文</option></select></label>
+      <label class="field" for="g2">Ngôn ngữ log<select id="g2" disabled><option>English (cố định)</option></select></label>
+      <label class="field" for="g3">Cỡ giao diện (UiScale)<select id="g3"><option>1.0 · màn 24"</option><option>1.1 · màn 21.5"</option></select></label>
+      <label class="field" for="g4">Chế độ kiosk<select id="g4"><option>Bật (che taskbar)</option><option>Tắt</option></select></label>
+      <label class="field" for="g5">Bố cục camera ở Vận hành<select id="g5"><option>Theo machine.json (Dual)</option><option>Single</option><option>Quad</option></select></label></div></section>`;
+  } else {
+    body=`<section class="card"><h3>Phiên bản & môi trường</h3><div class="cbody" style="padding:0"><table class="t">
+      <tr><td>MeoVision</td><td class="mono">2.0.0 (build 2026-10-15)</td></tr><tr><td>VisionPro</td><td class="mono">9.0 CR2 · 42 tính năng (VxPatMax, VxCaliper, VxBlob…)</td></tr>
+      <tr><td>Khởi động gần nhất</td><td class="mono">08:00:12 · 6,2 s · lần trước tắt bình thường</td></tr><tr><td>CPU / RAM</td><td class="mono">23% · 6.1 / 32 GB</td></tr></table></div></section>
+     <section class="card" style="flex:1"><h3>Log ứng dụng<span class="r">lọc theo mức và từ khoá</span></h3><div class="cbody col"><div class="row"><select aria-label="mức log" style="height:36px"><option>Warning trở lên</option><option>Tất cả</option></select><input aria-label="từ khoá" placeholder="từ khoá" style="height:36px;flex:1;border:1px solid var(--line);padding:0 8px"></div>
+      <div class="raw" style="flex:1"><div class="err">2026-10-16 14:31:52 [WRN] Device MainLight: Connected -> Faulted</div><div>2026-10-16 08:00:12 [INF] Startup finished in 6179 ms</div></div>
+      <button class="btn" type="button">Tạo gói chẩn đoán (log + cấu hình + ảnh lỗi gần nhất + mô tả)…</button></div></section>`;
+  }
+  return `<aside class="card" style="width:300px;flex:none"><h3>Hệ thống</h3><div class="sidelist" role="tablist">${subs.map(([k,l])=>`<button type="button" role="tab" data-sys="${k}" aria-selected="${S.sysSub===k}">${l}</button>`).join("")}</div></aside>
+    <div class="col" style="flex:1;min-width:0">${lockNote(3,false)}${body}</div>`;
+}
+
+/* ---------- ghi chú thiết kế từng màn ---------- */
+const NOTES={
+ home:{t:"Vận hành — màn mặc định (Level 1)",f:["Lưới camera theo bố cục khai trong machine.json; mỗi khung: vai trò, lệnh cuối, OK/NG, thời gian xử lý, score, tên ảnh.","Dải 16 kết quả gần nhất dưới mỗi camera — bấm một ô để xem lại ảnh và kết quả cũ, tiêu đề khung báo rõ \"đang xem lại\".","Kết quả gần nhất có từng mục kiểm: giá trị đo cạnh khoảng chấp nhận, để người vận hành biết vì sao NG.","Sub-tab Sơ đồ vị trí cho sản phẩm nhiều vị trí trong một ảnh; Bảng kết quả cho ai thích dạng danh sách.","Vùng trống luôn nói bước tiếp theo (bật \"Ca mới\" để xem)."],r:["Mọi vai trò. Không có nút đổi cấu hình nào ở màn này.","Thao tác có hậu quả (Offline) nằm ở thanh lệnh dưới, nhấn giữ 1 s."],s:"Nguồn: hai vùng ảnh + kết quả của RefVis-A/B; dải lịch sử 16 kết quả của giao diện Application Wizard (tài liệu VisionPro); sơ đồ vị trí + chú giải lỗi của RefVis-B; lý do OK/NG cạnh khoảng chấp nhận của RefVis-O (GitHub); bố cục work area + right rail 560 px của chuẩn HMI AM.AutoFrame v3."},
+ history:{t:"Lịch sử & ảnh (Level 2)",f:["Lọc theo ngày, sản phẩm, lệnh/camera, kết quả, lý do, serial — mặc định chỉ NG.","Ảnh gốc kèm overlay của chính lần chạy đó; ghi rõ định dạng lưu (không nén / LZW).","Chạy lại ảnh với job hiện tại (camera ảo), đánh dấu NG giả để kỹ sư xem lại, tạo gói chẩn đoán."],r:["Xem: mọi vai trò. Chạy lại: Kỹ sư + Offline. Đánh dấu NG giả: Trưởng ca+."],s:"Nguồn: RefVis-A chỉ mở thư mục Windows (trải nghiệm kém — không bắt chước); History + A/S của RefVis-B; Chương 14 §14.5, Chương 16 §16.3.4 (replay)."},
+ stats:{t:"Thống kê (Level 2)",f:["Xu hướng chỉ số theo thời gian với trung bình trượt, vùng cảnh báo sớm và ngưỡng — phát hiện trôi trước khi NG hàng loạt.","Tỷ lệ OK theo giờ (cột đỏ khi dưới mục tiêu), Pareto lỗi theo lỗi đại diện, thời gian xử lý so với ngân sách lệnh.","Giới hạn dừng máy hiện trạng thái đếm thời gian thực."],r:["Mọi vai trò xem; sửa giới hạn ở Hệ thống (Quản trị)."],s:"Nguồn: RefVis-A chỉ đếm cộng dồn (thiếu); Lot Data + Set MS Count của RefVis-B; Chương 16 §16.4.1–16.4.2."},
+ product:{t:"Sản phẩm & bảng lệnh (Level 2)",f:["Danh sách thư mục sản phẩm trên máy; mỗi sản phẩm hiện vai trò thiết bị cần dùng và máy có đủ hay không.","Bảng lệnh: mã lệnh → camera, job, exposure, đèn, timeout, thử lại, output trả máy, lưu ảnh; ví dụ bản tin vào/ra.","Ngưỡng ngoài job, lịch sử phiên bản có khôi phục, kiểm toàn bộ (lỗi/cảnh báo) trước khi cho kích hoạt."],r:["Kích hoạt: Trưởng ca+ và Offline (hoặc máy tự đổi bằng bản tin). Sửa: Kỹ sư + Offline."],s:"Nguồn: bảng lệnh của RefVis-C; recipe nhân bản của RefVis-A; DB Index + DB Sheet của RefVis-B; Chương 17 §17.3, Chương 19 (sẽ viết)."},
+ devices:{t:"Thiết bị & kết nối (Level 3)",f:["Bảng thiết bị theo vai trò với trạng thái Connected/Faulted, lý do lỗi và lần thử lại kế tiếp — từ DeviceManager (Chương 18).","Thử camera (chụp, live, exposure thử) và đèn (thanh trượt từng kênh) — chỉ khi Offline.","Bản tin thô vào/ra với máy, có thời gian xử lý từng lệnh; lưu log gửi hỗ trợ."],r:["Xem: Trưởng ca+. Kết nối lại: Trưởng ca+. Thử camera/đèn: Kỹ sư + Offline."],s:"Nguồn: cấu hình camera/đèn của RefVis-A (form riêng) và RefVis-C; Comm + I/O của RefVis-B (bản tin thô); watchdog không ai đọc của RefVis-A (bài học)."},
+ setup:{t:"Thiết lập ảnh — teach & chạy thử (Level 3)",f:["Chọn lệnh → nguồn ảnh (Live / chụp / ảnh mẫu) → teach theo 6 bước có trạng thái.","Hộp công cụ ảnh: overlay, vừa khung, 100%, giá trị xám dưới con trỏ, xem ngưỡng nhị phân; luôn ghi đang xem ảnh nào, qua bước nào.","Bảng mục kiểm bật/tắt + min/max + đơn vị, hiện giá trị đo của ảnh đang xem.","Chạy thử trên bộ ảnh mẫu có nhãn: khớp nhãn, NG giả, lọt — điều kiện để được lưu.","Trình chỉnh ToolBlock gốc của Cognex chỉ mở trên bản sao, dành cho Kỹ sư."],r:["Kỹ sư + Offline. Màn hiện cho Kỹ sư trở lên."],s:"Nguồn: teach theo bước + Test Run của RefVis-B; công cụ chỉnh PMAlign trên ảnh thật (\"chạy tất cả\" để thấy OK/NG ngay) của RefVis-C; nhúng ToolBlock editor của RefVis-A và dự án GitHub dùng camera Hikvision (rủi ro đã ghi ở Chương 14 §14.4.2); \"biết đang xem ảnh nào\" của RefVis-O."},
+ calib:{t:"Hiệu chuẩn (Level 3)",f:["Hiệu chuẩn gắn với camera vật lý của máy: ngày, RMS, hạn kiểm lại; ánh xạ hai camera.","Wizard 5 bước do máy dẫn (chín điểm, xoay U) — vision chỉ chụp và tính; tiến trình từng điểm.","Nhánh tự động/chỉnh tay theo sai số; \"Đã thay thiết bị\" làm mất hiệu lực hiệu chuẩn cũ.","Vị trí chuẩn của sản phẩm; cảnh báo khi dạy trên máy khác."],r:["Kỹ sư. Dạy lại vị trí chuẩn: Kỹ sư + Offline."],s:"Nguồn: hiệu chuẩn do máy dẫn của RefVis-C (Chương 7 §7.7); Calibration của RefVis-B; wizard 2 nhánh của chuẩn HMI AM.AutoFrame (Calibration Model)."},
+ system:{t:"Hệ thống (Level 3–4, Quản trị)",f:["Ma trận quyền 4 vai trò, tài khoản riêng từng người, tự đăng xuất khi rảnh.","Chính sách lưu ảnh (NG luôn lưu, OK lấy mẫu, nén không mất dữ liệu), dung lượng, xoá vòng.","Giới hạn dừng máy và thứ tự ưu tiên lỗi; sao lưu sang ổ vật lý khác; ngôn ngữ (log cố định tiếng Anh); kiosk; chẩn đoán + log lọc theo mức."],r:["Quản trị. Các vai trò khác không thấy tab này."],s:"Nguồn: Settings (SPC, Priority, Backup, Disk) + Security của RefVis-B; 5 vai trò + tự đăng xuất của RefVis-C; log lọc mức/từ khoá của RefVis-N (GitHub); chính sách bảo mật nhà máy (không khoá tài khoản) của AM.AutoFrame."},
+};
+function renderNotes(){
+  const n=NOTES[S.screen];
+  $("#notes").innerHTML=`<h2>${n.t}</h2>
+   <div><h3>Chức năng</h3><ul>${n.f.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+   <div><h3>Vai trò & khoá</h3><ul>${n.r.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h3 style="margin-top:14px">Quy tắc chung</h3><ul><li>Màu chỉ cho OK/NG/cảnh báo; nút không dùng được thì mờ và báo lý do khi bấm.</li><li>Online khoá mọi thay đổi; chuyển Offline phải nhấn giữ 1 s.</li></ul></div>
+   <div><h3>Lấy ý tưởng từ</h3><p class="src">${esc(n.s)}</p></div>`;
+}
+
+/* ---------- vẽ ---------- */
+const SCREENS={home,history,stats,product,devices,setup,calib,system};
+function render(){
+  if(!TABS.find(t=>t.id===S.screen&&S.role>=t.min)) S.screen="home";
+  renderTabs(); renderHeader(); renderBanner(); renderActbar();
+  const c=$("#content"); c.innerHTML=SCREENS[S.screen]();
+  wire(c); renderNotes(); fit();
+  requestAnimationFrame(()=>c.querySelectorAll("canvas[data-cam]").forEach(cv=>{ if(cv.dataset.empty){const g=cv.getContext("2d");const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;g.fillStyle="#1F1F1F";g.fillRect(0,0,cv.width,cv.height);g.fillStyle="#888";g.font="16px Segoe UI, Arial";g.textAlign="center";g.fillText("Chưa có ảnh trong ca — chờ lệnh từ máy",cv.width/2,cv.height/2);return;} drawCam(cv,cv.dataset.cam,cv.dataset.ng==="1")}));
+}
+function wire(c){
+  c.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{S.homeSub=b.dataset.sub;render()});
+  c.querySelectorAll("[data-cell]").forEach(b=>b.onclick=()=>{S.mapSel=+b.dataset.cell;render()});
+  c.querySelectorAll("[data-recall]").forEach(b=>b.onclick=()=>{S.recall=S.recall===b.dataset.recall?null:b.dataset.recall;toast(S.recall?"Đang xem lại kết quả cũ — khung camera dừng cập nhật. Bấm ô sáng viền để về kết quả mới.":"Về kết quả mới nhất.");render()});
+  c.querySelectorAll("[data-row]").forEach(r=>r.onclick=()=>{S.histSel=+r.dataset.row;if(S.screen!=="history")S.screen="history";render()});
+  c.querySelectorAll("[data-prod]").forEach(b=>b.onclick=()=>{S.prodSel=+b.dataset.prod;render()});
+  c.querySelectorAll("[data-dev]").forEach(r=>r.onclick=e=>{if(e.target.closest("button"))return;S.devSel=+r.dataset.dev;render()});
+  c.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{S.setupStep=+b.dataset.step;render()});
+  c.querySelectorAll("[data-sys]").forEach(b=>b.onclick=()=>{S.sysSub=b.dataset.sys;render()});
+  c.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{S.screen=b.dataset.go;render()});
+  c.querySelectorAll("button[data-need]").forEach(btn=>{
+    const blocked=(S.role<+btn.dataset.need)||(btn.dataset.off==="1"&&S.online);
+    if(blocked) btn.setAttribute("aria-disabled","true");
+    btn.onclick=()=>toast(blocked?(btn.dataset.why||"Không đủ quyền."):btn.textContent.trim()+" (mockup).");
+  });
+  c.querySelectorAll("button[aria-disabled='true']:not([data-need])").forEach(btn=>btn.onclick=()=>toast(btn.dataset.why||"Không khả dụng."));
+}
+function fit(){
+  const st=$("#stage"), sc=$("#scaler");
+  const k=Math.min(1,st.clientWidth/1920);
+  sc.style.transform=`scale(${k})`; st.style.height=(1080*k)+"px";
+}
+function syncDemo(){
+  $("#dAlarm").setAttribute("aria-pressed",S.alarm);
+  $("#dPrompt").setAttribute("aria-pressed",S.prompt);
+  $("#dEmpty").setAttribute("aria-pressed",S.empty);
+}
+$("#roleSel").onchange=e=>{S.role=+e.target.value;render()};
+$("#dAlarm").onclick=()=>{S.alarm=!S.alarm;syncDemo();render()};
+$("#dPrompt").onclick=()=>{S.prompt=!S.prompt;syncDemo();render()};
+$("#dEmpty").onclick=()=>{S.empty=!S.empty;syncDemo();render()};
+$("#userBtn").onclick=()=>toast("Đổi người dùng: đăng nhập tài khoản khác (không nhập mật khẩu của người khác).");
+$("#langBtn").onclick=()=>toast("Ngôn ngữ giao diện: Tiếng Việt · English · 中文 — đổi ngay, log giữ tiếng Anh.");
+window.addEventListener("resize",()=>{fit();render()});
+setInterval(()=>{const d=new Date();$("#clk").textContent=d.toTimeString().slice(0,8)},1000);
+render();
+})();
+</script>

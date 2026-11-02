@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "P-1024",
+  "name": "Test plate (sample)",
+  "commands": [
+    {
+      "code": "T1",
+      "name": "Mean brightness",
+      "channel": "CH1",
+      "camera": "TopCam",
+      "job": "T1_mean.vpp",
+      "exposureMs": 1.5,
+      "lights": [ { "role": "MainLight", "channel": 1, "intensity": 180 } ],
+      "timeoutMs": 1000,
+      "retry": 1,
+      "display": { "result": "", "raw": "" },
+      "outputs": [
+        { "terminal": "Mean", "name": "Brightness", "unit": "", "format": "0.0",
+          "lower": 20, "upper": 230 }
+      ]
+    },
+    {
+      "code": "T2",
+      "name": "Spot position",
+      "channel": "CH1",
+      "camera": "TopCam",
+      "job": "T2_spot.vpp",
+      "calibration": "TopCal",
+      "lights": [ { "role": "MainLight", "channel": 1, "intensity": 180 } ],
+      "timeoutMs": 1000,
+      "retry": 1,
+      "outputs": [
+        { "terminal": "X", "name": "Spot X", "unit": "mm", "format": "0.000",
+          "lower": 10, "upper": 50 },
+        { "terminal": "Y", "name": "Spot Y", "unit": "mm", "format": "0.000",
+          "lower": 20, "upper": 50 }
+      ],
+      "tunables": [
+        { "terminal": "MinArea", "name": "Min spot area", "unit": "px",
+          "min": 1, "max": 5000, "step": 1, "value": 20 }
+      ]
+    },
+    {
+      "code": "T3",
+      "name": "Spot count",
+      "channel": "CH2",
+      "camera": "BottomCam",
+      "job": "T3_blobs.vpp",
+      "lights": [ { "role": "MainLight", "channel": 2, "intensity": 120 } ],
+      "timeoutMs": 1000,
+      "outputs": [
+        { "terminal": "Count", "name": "Spots", "format": "0", "lower": 0, "upper": 50 }
+      ],
+      "tunables": [
+        { "terminal": "MinArea", "name": "Min spot area", "unit": "px",
+          "min": 1, "max": 5000, "step": 1, "value": 20 }
+      ]
+    }
+  ]
+}

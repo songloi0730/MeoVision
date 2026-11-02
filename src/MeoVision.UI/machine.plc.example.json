@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "machineName": "AOI-03",
+  "cameras": [
+    {
+      "role": "TopCam",
+      "type": "CognexGigE",
+      "settings": { "serialNumber": "24130517", "videoFormat": "", "timeoutMs": "2000" }
+    },
+    {
+      "role": "BottomCam",
+      "type": "CognexGigE",
+      "settings": { "serialNumber": "24130588", "videoFormat": "", "timeoutMs": "2000" }
+    }
+  ],
+  "lights": [],
+  "channels": [
+    {
+      "id": "CH1", "name": "Upper station", "type": "McPlc",
+      "settings": { "host": "192.168.1.10", "port": "5002", "bitStart": "M100", "wordStart": "D100",
+                    "pollMs": "20", "timeoutMs": "1000", "maxOutputs": "8" }
+    },
+    {
+      "id": "CH2", "name": "Lower station", "type": "McPlc",
+      "settings": { "host": "192.168.1.10", "port": "5002", "bitStart": "M200", "wordStart": "D200" }
+    }
+  ]
+}

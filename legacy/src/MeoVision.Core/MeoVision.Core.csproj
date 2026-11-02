@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>MeoVision.Core</RootNamespace>
+    <AssemblyName>MeoVision.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- System.Drawing là 1 phần của .NET Framework 4.8 — reference trực tiếp, KHÔNG dùng gói
+         NuGet System.Drawing.Common (gói đó dành cho .NET Core/5+ nơi System.Drawing không có sẵn) -->
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+</Project>

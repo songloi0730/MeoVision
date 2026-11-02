@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Lõi: mô hình cấu hình, kết quả, bản tin lệnh, toán.
+       KHÔNG tham chiếu Cognex hay project nào. -->
+  <PropertyGroup>
+    <RootNamespace>MeoVision.Core</RootNamespace>
+    <AssemblyName>MeoVision.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

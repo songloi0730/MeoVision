@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "machineName": "AOI-02",
+  "cameras": [
+    {
+      "role": "TopCam",
+      "type": "CognexGigE",
+      "settings": { "serialNumber": "24130517", "videoFormat": "", "timeoutMs": "2000" }
+    },
+    {
+      "role": "BottomCam",
+      "type": "Folder",
+      "settings": { "folder": "samples\\bottom", "patterns": "*.bmp;*.png", "loop": "true" }
+    }
+  ],
+  "lights": [
+    {
+      "role": "MainLight",
+      "type": "AsciiLight",
+      "settings": {
+        "transport": "Serial", "port": "COM3", "baudRate": "9600",
+        "channelNames": "A,B,C,D", "maxIntensity": "255",
+        "setCommand": "S{channel}{value:0000}#", "reply": "",
+        "queryCommand": ""
+      }
+    }
+  ],
+  "channels": [
+    {
+      "id": "CH1", "name": "Upper station", "type": "TcpServer",
+      "settings": { "host": "127.0.0.1", "port": "10001" }
+    },
+    {
+      "id": "CH2", "name": "Lower station", "type": "TcpServer",
+      "settings": { "host": "127.0.0.1", "port": "10002" }
+    }
+  ]
+}

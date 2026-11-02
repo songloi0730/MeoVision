@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Composition root: nơi DUY NHẤT nối interface của Core với bản cài đặt cụ thể. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>MeoVision.UI</RootNamespace>
+    <AssemblyName>MeoVision</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Serilog" Version="4.0.2" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+  <!-- Chương 22: UI chỉ dùng control HIỂN THỊ/EDITOR của Cognex (khung ảnh, editor ToolBlock trên
+       bản nháp); xử lý ảnh vẫn chỉ ở MeoVision.Vision. Private=False: DLL nằm trong GAC. -->
+  <ItemGroup>
+    <Reference Include="Cognex.VisionPro">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Core">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Controls">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Display.Controls">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Display.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ToolGroup">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ToolGroup.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ToolGroup.Controls">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ToolGroup.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeoVision.Core\MeoVision.Core.csproj" />
+    <ProjectReference Include="..\MeoVision.Vision\MeoVision.Vision.csproj" />
+    <ProjectReference Include="..\MeoVision.App\MeoVision.App.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Mẫu cấu hình máy: người lắp máy chép sang %ProgramData%\MeoVision\machine.json rồi sửa -->
+    <Content Include="machine.example.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="machine.plc.example.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- File ngôn ngữ nằm cạnh exe: người dịch sửa tại hiện trường, không cần build lại -->
+    <Content Include="languages\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

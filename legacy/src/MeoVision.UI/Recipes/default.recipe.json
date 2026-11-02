@@ -1,0 +1,13 @@
+{
+  "recipeId": "default",
+  "jobName": "TB_Inspect",
+  "jobFilePath": "Jobs\\TB_Inspect.vpp",
+  "sampleImageFolder": "SampleImages\\default",
+  "minAcceptScore": 0.75,
+  "partWidthMinMm": 24.5,
+  "partWidthMaxMm": 25.5,
+  "expectedPadCount": 6,
+  "maxRetries": 2,
+  "cycleTimeoutMs": 2000,
+  "jobLoadTimeoutMs": 10000
+}

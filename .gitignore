@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+*.user
+
+# Cognex VisionPro binaries/license — bản quyền, không commit
+src/MeoVision.Engine/libs/
+**/*.vpp.bak
+
+# Bản phát hành đóng gói (tools/publish.ps1) và dữ liệu trạm chạy thử
+dist/
+Data/
+*.dmp
+
+# Chỉ giữ cục bộ: danh sách repo tham khảo có tên thật, bản sao cũ trước khi sửa (ẩn danh — CLAUDE.md)
+reference/
+docs/backups/
+
+# IDE
+.vs/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

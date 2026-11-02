@@ -1,0 +1,806 @@
+<title>MeoVision UI Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: trang bao (tiêu đề + bộ chọn demo) → cửa sổ WinForms 1920×1080 co theo bề rộng → ghi chú bằng
+   chứng/quyết định của màn đang xem. Một "thế giới" duy nhất: giao diện Windows sáng (WinForms thật trên
+   IPC luôn sáng), nên đặt màu tường minh và không có biến thể tối. */
+:root{
+  color-scheme: light;
+  --page:#C9CDD2; --win:#F0F0F0; --win2:#FFFFFF; --edge:#ADADAD; --line:#D9D9D9; --tbar:#F7F8FA;
+  --txt:#1B1B1B; --txt2:#5C5F63; --txt3:#8E9297;
+  --sel:#0067C0; --selbg:#CCE4F7; --ok:#16793A; --okbg:#DCF2E3; --ng:#C42B1C; --ngbg:#FBE2DF;
+  --warn:#8F5600; --warnbg:#FFF0C8; --disp:#0E1317; --disph:#1E252B; --dispt:#C9D1D8;
+  --f-ui:"Segoe UI","Segoe UI Variable",system-ui,-apple-system,Arial,sans-serif;
+  --f-mono:Consolas,"Cascadia Mono","Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--page);color:var(--txt)}
+body{font-family:var(--f-ui);margin:0;padding-block:16px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+button,select,input{font-family:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- trang bao ---------- */
+.head{max-width:1920px;margin:0 auto 12px;display:flex;flex-direction:column;gap:10px}
+.head h1{margin:0;font-size:22px;font-weight:600;text-wrap:balance}
+.head p{margin:0;font-size:13px;color:var(--txt);max-width:110ch;line-height:1.5}
+.demo{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px}
+.demo .grp{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0}
+.demo .grp>span{color:var(--txt2);margin-right:4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.demo button{font-size:13px;padding:5px 10px;border:1px solid #8a8f95;background:var(--win2);border-radius:3px;cursor:pointer}
+.demo button[aria-pressed="true"]{background:var(--txt);color:var(--win2);border-color:var(--txt)}
+.stage{max-width:1920px;margin:0 auto;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.scaler{width:1920px;height:1080px;transform-origin:0 0}
+
+/* ---------- cửa sổ chính ---------- */
+.app{width:1920px;height:1080px;background:var(--win);display:flex;flex-direction:column;font-size:14px;position:relative;overflow:hidden}
+.titlebar{height:32px;background:var(--win2);display:flex;align-items:center;gap:10px;padding-left:12px;font-size:12.5px;border-bottom:1px solid var(--line)}
+.titlebar .ico{width:18px;height:18px}
+.titlebar .wb{margin-left:auto;display:flex}
+.titlebar .wb span{width:46px;height:32px;display:grid;place-items:center;color:var(--txt2);font-size:13px}
+.toolbar{height:84px;background:var(--tbar);border-bottom:1px solid var(--edge);display:flex;align-items:stretch;padding:0 6px;gap:2px}
+.tb{width:84px;border:1px solid transparent;background:none;border-radius:3px;margin:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:13px;position:relative}
+.tb svg{width:34px;height:34px}
+.tb:hover{background:#E5F1FB;border-color:#9DC7EA}
+.tb[aria-current="true"]{background:var(--selbg);border-color:#7EB4EA}
+.tb.locked{color:var(--txt3)}
+.tb.locked svg{opacity:.45}
+.tb .lk{position:absolute;top:4px;right:8px;width:14px;height:14px}
+.tsep{width:1px;background:var(--line);margin:12px 6px}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:10px;padding-right:8px}
+.mode{height:60px;min-width:150px;border:1px solid;border-radius:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;font-weight:700;font-size:16px;line-height:1.15}
+.mode small{font-weight:400;font-size:11.5px}
+.mode.on{background:var(--okbg);color:var(--ok);border-color:#8FCBA4}
+.mode.off{background:var(--warnbg);color:var(--warn);border-color:#E2BD6E}
+.prodbox{display:flex;flex-direction:column;align-items:flex-end;font-size:12px;color:var(--txt2);line-height:1.25}
+.prodbox b{font-size:17px;color:var(--txt);font-weight:600}
+.lang{height:34px;border:1px solid var(--edge);background:var(--win2);padding:0 8px;font-size:13px}
+
+.body{flex:1;min-height:0;display:flex}
+.center{flex:1;min-width:0;display:flex;flex-direction:column;padding:6px;gap:6px}
+.grid{flex:1;min-height:0;display:grid;gap:6px}
+.dp{background:var(--disp);display:flex;flex-direction:column;min-height:0;border:1px solid #39424a}
+.dph{height:34px;background:var(--disph);color:var(--dispt);display:flex;align-items:center;gap:10px;padding:0 8px;font-size:13px}
+.dph b{color:#fff;font-weight:600}
+.dph .cmd{font-family:var(--f-mono);font-size:12px;color:#9fb0bf}
+.dph .r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.tag{padding:1px 10px;font-weight:700;font-size:13px;letter-spacing:.03em}
+.tag.ok{background:var(--ok);color:#fff}.tag.ng{background:var(--ng);color:#fff}.tag.idle{background:#4a535b;color:#dfe5ea}
+.dpt{height:26px;display:flex;align-items:center;gap:2px;padding:0 4px;background:#262e35}
+.dpt i{width:22px;height:20px;display:grid;place-items:center;color:#aab6c1;font-style:normal;font-size:12px;border:1px solid transparent}
+.dpt i.on{border-color:#5b86b0;color:#fff}
+.dpt .why{margin-left:auto;font-size:12px;color:#d9a29a}
+.dpi{flex:1;min-height:0;position:relative}
+.dpi canvas{position:absolute;inset:0;width:100%;height:100%}
+.dpi .src{position:absolute;left:8px;top:6px;font-size:11.5px;color:#9fb0bf;background:rgba(14,19,23,.7);padding:1px 6px}
+.dpi .ovr{position:absolute;inset:auto 0 0 0;padding:6px 8px;font-family:var(--f-mono);font-size:12.5px;color:#e6edf2;background:linear-gradient(transparent,rgba(0,0,0,.65));display:flex;gap:16px;flex-wrap:wrap}
+.dpi .ovr .bad{color:#ff9d92;font-weight:700}
+.dpf{height:24px;display:flex;align-items:center;gap:12px;padding:0 8px;background:var(--disph);color:#8e9ba7;font-size:11.5px;font-family:var(--f-mono)}
+.strip{display:flex;gap:2px;margin-left:auto}
+.strip button{width:14px;height:14px;border:0;padding:0;cursor:pointer}
+.strip .o{background:#2f8f57}.strip .n{background:#d14b3d}.strip .cur{outline:2px solid #fff;outline-offset:-1px}
+.lost{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#e8b4ad;font-size:14px;line-height:1.6;background:repeating-linear-gradient(135deg,#151b20 0 14px,#11161a 14px 28px)}
+.lost b{font-size:16px;color:#ffb4aa}
+
+.dock{width:380px;border-left:1px solid var(--edge);background:var(--win);display:flex;flex-direction:column;min-height:0}
+.dock.mini{width:40px;align-items:center;padding-top:6px;gap:4px}
+.dock.mini button{writing-mode:vertical-rl;border:1px solid var(--edge);background:var(--win2);padding:12px 4px;font-size:13px;cursor:pointer}
+.dtabs{display:flex;gap:0;padding:6px 6px 0;border-bottom:1px solid var(--edge);align-items:flex-end}
+.dtabs .pin{margin-left:auto;align-self:center;height:28px;width:32px;border:1px solid var(--edge);background:var(--win2);cursor:pointer;margin-bottom:4px}
+.rec{height:22px;font-size:11.5px;font-family:var(--f-mono);background:#1b2329;color:#c9d1d8;border:1px solid #3a4650;max-width:330px}
+.cogtb{height:28px;display:flex;align-items:center;gap:1px;padding:0 4px;background:#F0F0F0;border-bottom:1px solid #CFCFCF}
+.cogtb i{width:24px;height:22px;display:grid;place-items:center;font-style:normal;font-size:12px;color:#7a2020}
+.cogtb i.b{color:#1d4f86}.cogtb .sep{width:1px;height:18px;background:#C8C8C8;margin:0 4px}
+.cogtb .gone{width:auto;padding:0 6px;font-size:11px;color:var(--ng);border:1px dashed #e3a39a;margin-left:6px}
+.cogtabs{display:flex;font-size:12.5px;border-bottom:1px solid #CFCFCF}
+.cogtabs span{padding:4px 10px;border:1px solid transparent;border-bottom:0}
+.cogtabs span.on{background:#fff;border-color:#CFCFCF}
+.cogtree{font-size:12.5px;line-height:1.75;padding:4px 8px;font-family:var(--f-ui)}
+.cogtree .in{color:#7b1f7b}.cogtree .out{color:#0f7a7a}.cogtree .tool{color:#555}
+.cogstat{height:22px;display:flex;align-items:center;gap:10px;padding:0 6px;font-size:12px;background:#F0F0F0;border-top:1px solid #CFCFCF}
+.cogrec{height:24px;border:1px solid #CFCFCF;background:#fff;font-size:12px;display:flex;align-items:center;padding:0 6px;justify-content:space-between}
+.vpnote{font-size:12px;color:var(--txt2);background:#F7F7F7;border:1px solid var(--line);padding:6px 8px;line-height:1.45}
+.dtab{height:36px;padding:0 16px;border:1px solid transparent;border-bottom:0;background:none;cursor:pointer;font-size:13.5px;color:var(--txt2);margin-bottom:-1px}
+.dtab[aria-selected="true"]{background:var(--win2);border-color:var(--edge);color:var(--txt);font-weight:600}
+.dbody{flex:1;min-height:0;background:var(--win2);display:flex;flex-direction:column}
+.cnt{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--line)}
+.cnt div{padding:8px 12px;border-right:1px solid var(--line)}
+.cnt div:last-child{border-right:0}
+.cnt .l{font-size:11.5px;color:var(--txt2)}
+.cnt .v{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.cnt .v.ok{color:var(--ok)}.cnt .v.ng{color:var(--ng)}
+.lfilter{display:flex;gap:6px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--line);font-size:12.5px}
+.lfilter button{height:28px;padding:0 10px;border:1px solid var(--edge);background:var(--win);font-size:12px;cursor:pointer}
+.lfilter button[aria-pressed="true"]{background:var(--selbg);border-color:#7EB4EA}
+.lfilter input{height:28px;flex:1;min-width:0;border:1px solid var(--edge);padding:0 6px;font-size:12px}
+.log{flex:1;min-height:0;overflow:auto;font-family:var(--f-mono);font-size:12.5px}
+.log table{width:100%;border-collapse:collapse}
+.log td{padding:3px 8px;border-bottom:1px solid #EEE;vertical-align:top;white-space:nowrap}
+.log td:last-child{white-space:normal;width:100%;word-break:break-all}
+.log tr.err td{background:var(--ngbg);color:var(--ng)}
+.log tr.wrn td{background:var(--warnbg);color:var(--warn)}
+.log tr.tx td:nth-child(2){color:var(--sel)}
+.manual{padding:12px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+.fs{border:1px solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.fs>.lg{font-size:12px;color:var(--txt2);margin-top:-4px}
+.radio{display:flex;gap:14px;font-size:13.5px;flex-wrap:wrap}
+.radio label{display:flex;gap:6px;align-items:center}
+.inp{height:32px;border:1px solid var(--edge);background:var(--win2);padding:0 8px;font-size:13.5px;width:100%}
+.inp:disabled{background:var(--win);color:var(--txt3)}
+.btn{height:36px;padding:0 14px;border:1px solid var(--edge);background:var(--win);border-radius:2px;cursor:pointer;font-size:13.5px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{background:#E5F1FB;border-color:#7EB4EA}
+.btn.big{height:52px;font-size:15px;font-weight:600}
+.btn.pri{background:var(--sel);border-color:var(--sel);color:#fff}
+.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.why-box{display:flex;gap:8px;align-items:flex-start;background:var(--warnbg);color:var(--warn);border:1px solid #E2BD6E;padding:8px 10px;font-size:13px;line-height:1.4}
+
+.status{height:30px;background:var(--win);border-top:1px solid var(--edge);display:flex;align-items:stretch;font-size:12.5px}
+.status>span{display:flex;align-items:center;gap:6px;padding:0 10px;border-right:1px solid var(--line);white-space:nowrap}
+.status .dev{padding:0 9px;color:#fff;font-weight:600}
+.dev.ok{background:var(--ok)}.dev.ng{background:var(--ng)}.dev.warn{background:#B97A0A}.dev.off{background:#7d848b}
+.status .grow{flex:1;border-right:0}
+.status .t{font-family:var(--f-mono)}
+
+/* ---------- form con (cửa sổ WinForms riêng, không modal) ---------- */
+.form{position:absolute;background:var(--win);border:1px solid #7a7f85;box-shadow:0 10px 32px rgba(0,0,0,.35);display:flex;flex-direction:column;min-height:0}
+.ftitle{height:32px;background:var(--win2);display:flex;align-items:center;gap:8px;padding-left:10px;font-size:12.5px;border-bottom:1px solid var(--line)}
+.ftitle svg{width:16px;height:16px}
+.ftitle .x{margin-left:auto;width:46px;height:32px;border:0;background:none;cursor:pointer;font-size:14px}
+.ftitle .x:hover{background:#C42B1C;color:#fff}
+.fbody{flex:1;min-height:0;display:flex;flex-direction:column;padding:8px;gap:8px}
+.ftabs{display:flex;border-bottom:1px solid var(--edge)}
+.ftab{height:32px;padding:0 14px;border:1px solid transparent;border-bottom:0;background:none;cursor:pointer;font-size:13.5px;color:var(--txt2);margin-bottom:-1px}
+.ftab[aria-selected="true"]{background:var(--win2);border-color:var(--edge);color:var(--txt);font-weight:600}
+.pane{flex:1;min-height:0;background:var(--win2);border:1px solid var(--edge);border-top:0;padding:10px;display:flex;gap:10px;overflow:auto}
+.cols{display:flex;gap:10px;flex:1;min-height:0}
+.colv{display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0}
+.side{width:150px;display:flex;flex-direction:column;gap:6px}
+.side .btn{width:100%}
+table.g{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;width:100%}
+table.g th{background:#F3F3F3;border:1px solid #CFCFCF;font-weight:400;text-align:left;padding:5px 8px;color:var(--txt2);white-space:nowrap;position:sticky;top:0}
+table.g td{border:1px solid #DDD;padding:0 8px;height:30px;white-space:nowrap}
+table.g tr.sel td{background:var(--selbg)}
+table.g tr.act td:first-child{font-weight:700}
+table.g td.num{text-align:right}
+table.g td.mono{font-family:var(--f-mono);font-size:12.5px}
+.gwrap{border:1px solid var(--edge);overflow:auto;min-height:0;background:var(--win2)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:8px 10px;align-items:center;font-size:13.5px}
+.kv>label{color:var(--txt2)}
+.pill{display:inline-block;padding:1px 8px;font-size:12px;font-weight:600;border-radius:10px}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.ng{background:var(--ngbg);color:var(--ng)}
+.pill.warn{background:var(--warnbg);color:var(--warn)}.pill.off{background:#E6E6E6;color:var(--txt2)}
+.mini-disp{background:var(--disp);position:relative;min-height:0}
+.mini-disp canvas{position:absolute;inset:0;width:100%;height:100%}
+.tbe{height:30px;display:flex;align-items:center;gap:2px;padding:0 4px;background:#F3F3F3;border:1px solid #CFCFCF}
+.tbe i{width:24px;height:22px;display:grid;place-items:center;font-style:normal;font-size:12px;color:#3b5f86;border:1px solid transparent}
+.tbe i.on{border-color:#7EB4EA;background:var(--selbg)}
+.tree{font-size:13.5px;line-height:1.9;padding:6px 8px}
+.tree div{display:flex;gap:6px;align-items:center;padding:0 4px;cursor:default}
+.tree .sel{background:var(--selbg)}
+.tree .ind{padding-left:22px}
+.traffic{font-family:var(--f-mono);font-size:12.5px;line-height:1.7;padding:6px 8px;overflow:auto;min-height:0;flex:1}
+.traffic .rx{color:#0b5d2a}.traffic .tx{color:var(--sel)}.traffic .er{color:var(--ng)}
+.bits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bit{border:1px solid var(--line);padding:6px 8px;font-size:12.5px;display:flex;flex-direction:column;gap:2px}
+.bit b{font-family:var(--f-mono);font-size:12px;color:var(--txt2);font-weight:400}
+.bit .v{display:flex;gap:6px;align-items:center;font-weight:600}
+.led{width:12px;height:12px;border-radius:50%;background:#C8C8C8;border:1px solid #9a9a9a}
+.led.on{background:#2fb35c;border-color:#1b7f3b}.led.red{background:#e0483a;border-color:#a72c20}
+.seq{display:flex;gap:0;font-size:12px}
+.seq span{flex:1;border:1px solid var(--line);padding:5px 6px;text-align:center;background:var(--win2);color:var(--txt2)}
+.seq span.done{background:var(--okbg);color:var(--ok)}.seq span.now{background:var(--selbg);color:var(--sel);font-weight:700}
+.chk{display:flex;gap:6px;align-items:center;font-size:13.5px}
+.note-inline{font-size:12.5px;color:var(--txt2);line-height:1.45}
+.dim{position:absolute;inset:0;background:rgba(20,24,28,.35)}
+.toast{position:absolute;left:50%;top:96px;transform:translateX(-50%);background:#2B2F33;color:#fff;padding:10px 16px;font-size:14px;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.35);display:flex;gap:10px;align-items:center;z-index:9}
+.toast[hidden]{display:none!important}
+
+/* ---------- ghi chú ---------- */
+.notes{max-width:1920px;margin:14px auto 0;background:var(--win2);border:1px solid var(--edge);padding-block:16px;padding-inline:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px 28px}
+.notes h2{grid-column:1/-1;margin:0;font-size:17px;text-wrap:balance}
+.notes h3{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.notes ul{margin:0;padding-left:18px;font-size:13px;line-height:1.55}
+.notes li{margin-bottom:3px}
+.notes .roles{grid-column:1/-1;overflow-x:auto}
+.notes table{border-collapse:collapse;font-size:13px;min-width:640px;width:100%}
+.notes th,.notes td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+.notes th{background:var(--win);font-weight:600}
+.notes td.c{text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 32 32"><path d="M4 15 16 5l12 10v12h-8v-8h-8v8H4z" fill="#3E6E9E"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 32 32"><rect x="3" y="9" width="26" height="18" rx="2" fill="#3E6E9E"/><rect x="11" y="5" width="10" height="5" fill="#3E6E9E"/><circle cx="16" cy="18" r="6" fill="#fff"/><circle cx="16" cy="18" r="3.4" fill="#3E6E9E"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="24" fill="#fff" stroke="#3E6E9E" stroke-width="2"/><path d="M4 4h8v8H4zM20 4h8v8h-8zM12 12h8v8h-8zM4 20h8v8H4zM20 20h8v8h-8z" fill="#3E6E9E"/></symbol>
+    <symbol id="i-job" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="none" stroke="#3E6E9E" stroke-width="3"/><circle cx="16" cy="16" r="4.5" fill="#3E6E9E"/><path d="M16 1v7M16 24v7M1 16h7M24 16h7" stroke="#3E6E9E" stroke-width="2.4"/></symbol>
+    <symbol id="i-com" viewBox="0 0 32 32"><rect x="2" y="6" width="12" height="9" fill="#3E6E9E"/><rect x="18" y="17" width="12" height="9" fill="#3E6E9E"/><path d="M8 15v6h10M24 17v-6H14" fill="none" stroke="#3E6E9E" stroke-width="2.2"/></symbol>
+    <symbol id="i-prod" viewBox="0 0 32 32"><path d="M3 9 16 3l13 6v14l-13 6-13-6z" fill="#3E6E9E"/><path d="M3 9l13 6 13-6M16 15v14" stroke="#fff" stroke-width="1.8" fill="none"/></symbol>
+    <symbol id="i-his" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="none" stroke="#3E6E9E" stroke-width="3"/><path d="M16 9v8l5 4" stroke="#3E6E9E" stroke-width="3" fill="none"/></symbol>
+    <symbol id="i-set" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11.5" fill="none" stroke="#3E6E9E" stroke-width="5" stroke-dasharray="4.5 4.53"/><circle cx="16" cy="16" r="9" fill="#3E6E9E"/><circle cx="16" cy="16" r="4" fill="#fff"/></symbol>
+    <symbol id="i-user" viewBox="0 0 32 32"><circle cx="16" cy="11" r="6.5" fill="#3E6E9E"/><path d="M4 29c1-7 6-10 12-10s11 3 12 10z" fill="#3E6E9E"/></symbol>
+    <symbol id="i-exit" viewBox="0 0 32 32"><path d="M10 7a11 11 0 1 0 12 0" fill="none" stroke="#3E6E9E" stroke-width="3.2" stroke-linecap="round"/><path d="M16 3v12" stroke="#3E6E9E" stroke-width="3.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><rect x="2.5" y="7" width="11" height="8" rx="1" fill="#6b7177"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="#6b7177" stroke-width="1.8"/></symbol>
+    <symbol id="i-app" viewBox="0 0 20 20"><rect width="20" height="20" rx="3" fill="#1F4E79"/><circle cx="10" cy="10" r="5.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="10" cy="10" r="1.8" fill="#fff"/></symbol>
+  </defs>
+</svg>
+
+<div class="head">
+  <h1>MeoVision — mẫu giao diện v2.1 (WinForms, phần mềm vision riêng, control VisionPro thật)</h1>
+  <p>Cửa sổ thật 1920×1080 thu nhỏ theo bề rộng trình duyệt. Bấm nút trên thanh công cụ hoặc chọn màn ở dưới để mở
+  form; đổi vai trò, ngôn ngữ, chế độ, kiểu kết nối và tình huống để xem giao diện phản ứng. Mọi số liệu là ví dụ.
+  Khung chung lấy theo điểm chung của hai phần mềm vision đã chạy thật (RefVis-A, RefVis-C) và các repo vision đã khảo sát.
+  Bản 2.1: các vùng có control VisionPro (khung ảnh, editor ToolBlock, editor lấy ảnh, editor hiệu chuẩn) vẽ theo ảnh chụp
+  control thật đã nhúng thử trong một chương trình WinForms, cùng kích thước.</p>
+  <div class="demo" id="demo"></div>
+</div>
+<div class="stage" id="stage"><div class="scaler" id="scaler"><div class="app" id="app"></div></div></div>
+<section class="notes" id="notes" aria-live="polite"></section>
+
+<script>
+/* ===== dữ liệu ví dụ ===== */
+const ROLES=[['op',0],['eng',1],['adm',2]];
+const LV={op:0,eng:1,adm:2};
+const S={screen:'main',role:'op',lang:'vi',online:true,topo:'tcp1',scen:'normal',dock:'log',dockOpen:true,view:{},ftab:{},logf:'all',toast:''};
+
+const T={
+ vi:{home:'Trang chính',camera:'Camera',calib:'Hiệu chuẩn',jobs:'Lệnh & job',comm:'Giao tiếp',product:'Sản phẩm',history:'Lịch sử',settings:'Cài đặt',user:'Đăng nhập',exit:'Thoát',
+  online:'ONLINE',offline:'OFFLINE',onSub:'nhận lệnh từ máy',offSub:'không nhận lệnh',product_l:'Sản phẩm',
+  log:'Nhật ký',manual:'Chạy tay',counts:'Bộ đếm',ok:'OK',ng:'NG',yield:'Tỷ lệ đạt',all:'Tất cả',errs:'Lỗi',cmds:'Lệnh',search:'Tìm trong nhật ký…',
+  st_prod:'Sản phẩm',st_user:'Người dùng',st_idle:'tự đăng xuất sau',st_link:'Kết nối',st_disk:'Ổ D: còn',st_mode:'Chế độ',
+  role_op:'Vận hành',role_eng:'Kỹ sư',role_adm:'Quản trị',
+  need:'Cần quyền',login_to:'Đăng nhập để dùng',noCam:'Mất kết nối camera',retry:'đang thử nối lại',
+  lastR:'Gần nhất',cycle:'Thời gian xử lý',src_live:'Ảnh: camera',reset:'Đặt lại bộ đếm'},
+ en:{home:'Home',camera:'Camera',calib:'Calibration',jobs:'Commands & jobs',comm:'Communication',product:'Product',history:'History',settings:'Settings',user:'Log in',exit:'Exit',
+  online:'ONLINE',offline:'OFFLINE',onSub:'accepting machine commands',offSub:'not accepting commands',product_l:'Product',
+  log:'Log',manual:'Manual run',counts:'Counters',ok:'OK',ng:'NG',yield:'Yield',all:'All',errs:'Errors',cmds:'Commands',search:'Search log…',
+  st_prod:'Product',st_user:'User',st_idle:'auto logout in',st_link:'Link',st_disk:'Drive D: free',st_mode:'Mode',
+  role_op:'Operator',role_eng:'Engineer',role_adm:'Administrator',
+  need:'Requires',login_to:'Log in to use',noCam:'Camera disconnected',retry:'retrying',
+  lastR:'Last',cycle:'Processing time',src_live:'Image: camera',reset:'Reset counters'},
+ zh:{home:'主页',camera:'相机',calib:'标定',jobs:'指令与作业',comm:'通信',product:'产品',history:'历史',settings:'设置',user:'登录',exit:'退出',
+  online:'在线',offline:'离线',onSub:'接收机台指令',offSub:'不接收指令',product_l:'产品',
+  log:'日志',manual:'手动运行',counts:'计数',ok:'OK',ng:'NG',yield:'良率',all:'全部',errs:'错误',cmds:'指令',search:'搜索日志…',
+  st_prod:'产品',st_user:'用户',st_idle:'自动登出',st_link:'连接',st_disk:'D盘剩余',st_mode:'模式',
+  role_op:'操作员',role_eng:'工程师',role_adm:'管理员',
+  need:'需要权限',login_to:'请登录',noCam:'相机断开',retry:'正在重连',
+  lastR:'最近',cycle:'处理时间',src_live:'图像: 相机',reset:'计数清零'}
+};
+const t=k=>(T[S.lang]&&T[S.lang][k])||T.vi[k]||k;
+const roleName=r=>t('role_'+r);
+
+// Thanh công cụ: [id, icon, khoá-tối-thiểu]. Khoá theo vai trò; KHÔNG ẩn, chỉ mờ + nói lý do.
+const TOOLS=[['main','i-home','op'],['camera','i-cam','eng'],['calib','i-cal','eng'],['jobs','i-job','eng'],['comm','i-com','eng'],
+ ['product','i-prod','op'],['history','i-his','op'],['settings','i-set','adm'],'|',['user','i-user','op'],['exit','i-exit','eng']];
+const LABEL={main:'home'};
+
+// Khung hiển thị: gán theo lệnh (job), tên theo chức năng — giống cả RefVis-A lẫn RefVis-C.
+const DISPLAYS=[
+ {n:'Định vị trên',cam:'TopCam',cmd:'T1',kind:'align'},
+ {n:'Đọc mã DataMatrix',cam:'TopCam',cmd:'T2',kind:'code'},
+ {n:'Kiểm khuyết mặt dưới',cam:'BottomCam',cmd:'T3',kind:'defect'},
+ {n:'Đo khoảng cách chân',cam:'BottomCam',cmd:'T4',kind:'gauge'}];
+
+// Kênh giao tiếp (DESIGN_LOG [17]): khai ở cấp máy (machine.json); mỗi lệnh trong bảng lệnh chọn một kênh.
+// TCP: kênh = một cổng nghe. PLC Mitsubishi: kênh = một vùng bắt tay D/M (dùng chung một kết nối MC 3E).
+function channels(){
+  const plc=S.topo==='plc', host=S.topo==='tcp1'?'127.0.0.1':'192.168.1.20';
+  const cli=S.topo==='tcp1'?['127.0.0.1:52144','127.0.0.1:52151']:['192.168.1.30:50731','192.168.1.30:50740'];
+  return [
+    {id:'CH1',name:'Trạm trên',cmds:'T1, T2',cam:'TopCam',base:100,
+     kind:plc?'PLC MC 3E':'TCP server',addr:plc?'D100–D129 · M100–M115':`${host}:10001`,peer:plc?'192.168.1.10:5002':cli[0]},
+    {id:'CH2',name:'Trạm dưới',cmds:'T3, T4',cam:'BottomCam',base:200,
+     kind:plc?'PLC MC 3E':'TCP server',addr:plc?'D200–D229 · M200–M215':`${host}:10002`,peer:plc?'192.168.1.10:5002':cli[1]}];
+}
+
+function scenario(){
+  const ng=S.scen==='ng', lost=S.scen==='lost';
+  return {
+    res:[
+      {r:'ok',ms:38,ov:['X 12.418','Y -3.207','U 0.42°','điểm 0.93']},
+      {r:'ok',ms:61,ov:['MÃ 2410-AOI02-88213','grade B']},
+      lost?{r:'idle',ms:0,ov:[]}:ng?{r:'ng',ms:74,ov:['Vết xước 1.8 mm² ','giới hạn ≤ 0.5'],why:'Vết xước 1.8 mm² > 0.5'}:{r:'ok',ms:72,ov:['Khuyết lớn nhất 0.2 mm²','giới hạn ≤ 0.5']},
+      lost?{r:'idle',ms:0,ov:[]}:{r:'ok',ms:44,ov:['Chân 1–2: 2.541','khoảng 2.50 ± 0.05']}
+    ],
+    lost, ng
+  };
+}
+
+/* ===== tiện ích ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const can=min=>LV[S.role]>=LV[min];
+function lockIcon(){return '<svg class="lk"><use href="#i-lock"/></svg>';}
+// Nút không dùng được: mờ + bấm vào nói lý do. Lý do mặc định suy từ vai trò/chế độ; truyền 'adm' cho cài đặt hệ thống.
+function why(kind){
+  if(kind==='adm') return `${t('need')}: ${roleName('adm')}`;
+  if(!can('eng')) return `${t('need')}: ${roleName('eng')}`;
+  return 'Đang ONLINE — chuyển OFFLINE (nhấn giữ 1 s) để dùng';
+}
+function dis(cond,kind){return cond?` aria-disabled="true" data-why="${esc(why(kind))}"`:'';}
+
+/* ===== bộ chọn demo ===== */
+function renderDemo(){
+  const g=(label,key,opts)=>`<div class="grp"><span>${label}</span>${opts.map(([v,l])=>`<button data-k="${key}" data-v="${v}" aria-pressed="${S[key]===v}">${l}</button>`).join('')}</div>`;
+  $('#demo').innerHTML=
+    g('Màn','screen',[['start','Khởi động'],['main','Trang chính'],['camera','Camera'],['calib','Hiệu chuẩn'],['jobs','Lệnh & job'],['comm','Giao tiếp'],['product','Sản phẩm'],['history','Lịch sử'],['settings','Cài đặt'],['user','Đăng nhập']])+
+    g('Vai trò','role',[['op','Vận hành'],['eng','Kỹ sư'],['adm','Quản trị']])+
+    g('Ngôn ngữ','lang',[['vi','VI'],['en','EN'],['zh','中文']])+
+    g('Kết nối','topo',[['tcp1','PC control cùng máy'],['tcp2','PC control máy khác'],['plc','PLC trực tiếp']])+
+    g('Tình huống','scen',[['normal','Bình thường'],['ng','Có NG'],['lost','Mất camera']]);
+  document.querySelectorAll('#demo button').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k, v=b.dataset.v;
+    if(k==='screen'){ if(v==='user'){S.screen='user';} else S.screen=v; }
+    else S[k]=v;
+    if(k==='role' && S.screen!=='main' && S.screen!=='user' && !canOpen(S.screen)) S.screen='main';
+    render();
+  });
+}
+function canOpen(id){const tl=TOOLS.find(x=>x[0]===id);return !tl||can(tl[2]);}
+
+/* ===== cửa sổ chính ===== */
+function renderApp(){
+  const sc=scenario();
+  const prod='P-1024 · Vỏ nhôm A';
+  let h=`<div class="titlebar"><svg class="ico"><use href="#i-app"/></svg>MeoVision 1.0 — AOI-02 — ${esc(prod)}<div class="wb"><span>—</span><span>▢</span><span>✕</span></div></div>`;
+  // toolbar
+  h+='<div class="toolbar" role="toolbar">';
+  for(const tl of TOOLS){
+    if(tl==='|'){h+='<div class="tsep"></div>';continue;}
+    const [id,ic,min]=tl, ok=can(min);
+    const lab=id==='user'?(S.role==='op'?t('user'):roleName(S.role)):t(LABEL[id]||id);
+    h+=`<button class="tb${ok?'':' locked'}" data-open="${id}" aria-current="${S.screen===id}" title="${ok?'':esc(t('need')+': '+roleName(min))}"><svg><use href="#${ic}"/></svg>${esc(lab)}${ok?'':lockIcon()}</button>`;
+  }
+  const onl=S.online;
+  h+=`<div class="tbr"><div class="prodbox">${t('product_l')}<b>${esc(prod)}</b></div>
+    <select class="lang" id="langSel" aria-label="Ngôn ngữ"><option value="vi"${S.lang==='vi'?' selected':''}>Tiếng Việt</option><option value="en"${S.lang==='en'?' selected':''}>English</option><option value="zh"${S.lang==='zh'?' selected':''}>中文</option></select>
+    <button class="mode ${onl?'on':'off'}" id="modeBtn" title="${can('eng')?'Nhấn giữ 1 s để đổi':'Cần quyền Kỹ sư'}">${onl?t('online'):t('offline')}<small>${onl?t('onSub'):t('offSub')}</small></button></div></div>`;
+  // body
+  h+='<div class="body"><div class="center"><div class="grid" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">';
+  DISPLAYS.forEach((d,i)=>{
+    const r=sc.res[i], camLost=sc.lost&&d.cam==='BottomCam';
+    const tag=r.r==='ok'?'<span class="tag ok">OK</span>':r.r==='ng'?'<span class="tag ng">NG</span>':'<span class="tag idle">—</span>';
+    const hist=Array.from({length:16},(_,k)=>{const n=(i===2&&sc.ng&&(k===15||k===11))||(i===0&&k===6);return `<button class="${n?'n':'o'}${k===15?' cur':''}" title="Kết quả ${k-15===0?'gần nhất':(k-15)}"></button>`;}).join('');
+    h+=`<div class="dp"><div class="dph"><b>${esc(d.n)}</b><span class="cmd">${d.cmd} · ${d.cam}</span><span class="r">${r.ms?`<span>${r.ms} ms</span>`:''}${tag}</span></div>
+      <div class="dpt"><i class="on" title="Chọn">↖</i><i title="Kéo">✥</i><i title="Phóng to">＋</i><i title="Thu nhỏ">－</i><i title="Vừa khung">▣</i><i title="Lưới">#</i>
+        <i data-view="${i}" title="Đổi ảnh kết quả ↔ ảnh gốc (record khai báo trong bảng lệnh)" style="width:auto;padding:0 6px;border-color:#5b86b0;color:#fff">${S.view[i]?'Ảnh gốc':'Ảnh kết quả'}</i>
+        ${can('eng')?`<select class="rec" aria-label="Record VisionPro" title="Chỉ Kỹ sư: chọn record bất kỳ của LastRun (tên gốc VisionPro, không dịch)"><option>${S.view[i]?'LastRun.CogImageFileTool1.OutputImage':`LastRun.${['CogPMAlignTool1','CogIDTool1','CogBlobTool1','CogCaliperTool1'][i]}.InputImage`}</option><option>LastRun.CogFixtureTool1.OutputImage</option><option>LastRun.CogImageFileTool1.OutputImage</option></select>`:''}
+        ${r.why?`<span class="why">${esc(r.why)}</span>`:''}</div>
+      <div class="dpi">${camLost?`<div class="lost"><div><b>${t('noCam')} ${d.cam}</b><br>192.168.52.101 · ${t('retry')} (lần 4, chờ 16 s)<br><span style="color:#9fb0bf">Lệnh ${d.cmd} sẽ trả "ERR,CAM" cho máy, không treo.</span></div></div>`:`<canvas data-kind="${S.view[i]?'raw':d.kind}" data-res="${r.r}"></canvas><span class="src">${t('src_live')} ${d.cam} · 10:42:18.305</span><div class="ovr">${r.ov.map(x=>`<span class="${r.r==='ng'&&x.includes('Vết')?'bad':''}">${esc(x)}</span>`).join('')}</div>`}</div>
+      <div class="dpf"><span>(812, 604)</span><span>100%</span><span>I=143</span><span class="strip" aria-label="16 kết quả gần nhất">${hist}</span></div></div>`;
+  });
+  h+='</div></div>';
+  // dock
+  // Dock tự thu gọn (như RefVis-C): spike đo được thu dock 470→360 px làm mỗi khung ảnh rộng thêm ~55 px
+  h+= S.dockOpen
+    ? `<div class="dock"><div class="dtabs" role="tablist">${['log','manual','counts'].map(k=>`<button class="dtab" role="tab" data-dock="${k}" aria-selected="${S.dock===k}">${t(k)}</button>`).join('')}<button class="pin" id="dockPin" title="Thu gọn sang mép phải">»</button></div><div class="dbody">${renderDock(sc)}</div></div></div>`
+    : `<div class="dock mini">${['log','manual','counts'].map(k=>`<button data-dockopen="${k}">${t(k)}</button>`).join('')}</div></div>`;
+  // status
+  // mỗi kênh một ô: kênh nào mất nhịp tim thì chỉ ô đó đỏ
+  const link = channels().map(c=>`<span class="dev ${onl?'ok':'warn'}" title="${c.name} · lệnh ${c.cmds}">${c.id} ${S.topo==='plc'?c.addr.split(' ')[0]:c.addr.split(':')[1]} ${S.topo==='plc'?'· nhịp tim ✓':'· 1 client'}</span>`).join('');
+  h+=`<div class="status"><span>${t('st_prod')}: <b>P-1024</b></span><span>${t('st_user')}: <b>${roleName(S.role)}</b>${S.role!=='op'?` · ${t('st_idle')} 9:12`:''}</span>
+    <span class="dev ok">TopCam</span><span class="dev ${sc.lost?'ng':'ok'}">BottomCam</span><span class="dev ok">MainLight</span>${link}
+    <span>${t('st_disk')} 412 GB</span><span>CPU 11%</span><span>RAM 1.2 GB</span><span class="grow"></span><span class="t">2026-10-16 10:42:19</span></div>`;
+  // form
+  if(S.screen!=='main') h+=renderForm();
+  h+=`<div class="toast" id="toast"${S.toast?'':' hidden'}><svg width="16" height="16"><use href="#i-lock"/></svg><span>${esc(S.toast)}</span></div>`;
+  $('#app').innerHTML=h;
+  wire();
+  drawAll();
+}
+
+function renderDock(sc){
+  if(S.dock==='log'){
+    const rows=[
+      ['10:42:18.305','T1','CH1 RX "T1,SN88213"',''],
+      ['10:42:18.306','T3','CH2 RX "T3,SN88213"',''],
+      ['10:42:18.343','T1','CH1 TX "T1,OK,12.418,-3.207,0.42" (38 ms)','tx'],
+      ['10:42:18.351','T2','CH1 TX "T2,OK,2410-AOI02-88213"','tx'],
+      ...(sc.ng?[['10:42:18.380','T3','CH2 NG — Vết xước 1.8 mm² > 0.5 (ảnh đã lưu NG)','err']]:sc.lost?[['10:42:18.307','T3','CH2 TX "T3,ERR,CAM" — BottomCam đang mất kết nối','err']]:[['10:42:18.380','T3','CH2 TX "T3,OK"','tx']]),
+      ...(sc.lost?[['10:42:17.020','DEV','BottomCam mất kết nối: GigE timeout 2000 ms — thử lại sau 16 s','err'],['10:41:55.002','DEV','BottomCam lỗi lấy ảnh lần 3/3','wrn']]:[]),
+      ['10:41:12.880','SYS','Ổ D: còn 412 GB — dọn ảnh cũ hơn 180 ngày: đã xoá 3 214 file',''],
+      ['10:30:02.114','USR','Kỹ sư đăng xuất (hết 10 phút không thao tác)',''],
+      ['08:00:00.000','SYS','Bắt đầu ca 1 — bộ đếm đã đặt lại bởi Vận hành',''],
+      ['07:58:41.551','SYS','Nạp sản phẩm P-1024: 4 lệnh, 4 job .vpp, 2 hiệu chuẩn — OK',''],
+    ].filter(r=>S.logf==='all'||(S.logf==='err'&&(r[3]==='err'||r[3]==='wrn'))||(S.logf==='cmd'&&/^T\d/.test(r[1])));
+    return `<div class="cnt"><div><div class="l">${t('ok')}</div><div class="v ok">2 418</div></div><div><div class="l">${t('ng')}</div><div class="v${sc.ng?' ng':''}">${sc.ng?37:35}</div></div><div><div class="l">${t('yield')}</div><div class="v">98.5%</div></div></div>
+    <div class="lfilter">${[['all','all'],['err','errs'],['cmd','cmds']].map(([k,l])=>`<button data-logf="${k}" aria-pressed="${S.logf===k}">${t(l)}</button>`).join('')}<input placeholder="${esc(t('search'))}" aria-label="${esc(t('search'))}"></div>
+    <div class="log"><table>${rows.map(r=>`<tr class="${r[3]}"><td>${r[0]}</td><td>${r[1]}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`;
+  }
+  if(S.dock==='manual'){
+    const off=!S.online, eng=can('eng');
+    const why=!eng?`<div class="why-box"><svg width="16" height="16"><use href="#i-lock"/></svg>Chạy tay cần quyền Kỹ sư. Vận hành chỉ xem được kết quả.</div>`
+      : !off?`<div class="why-box">Đang ONLINE: máy có thể gửi lệnh bất cứ lúc nào. Chạy tay trên ảnh camera bị khoá; chạy trên ảnh file/thư mục vẫn được (không trả lời máy).</div>`:'';
+    const d=!eng;
+    return `<div class="manual">${why}
+     <div class="fs"><div class="lg">Lệnh</div><select class="inp"${d?' disabled':''}><option>T1 · Định vị trên</option><option>T2 · Đọc mã</option><option>T3 · Kiểm khuyết dưới</option><option>T4 · Đo khoảng cách chân</option></select></div>
+     <div class="fs"><div class="lg">Nguồn ảnh</div><div class="radio"><label><input type="radio" name="src"${d||!off?' disabled':''}>Camera</label><label><input type="radio" name="src" checked${d?' disabled':''}>Thư mục</label><label><input type="radio" name="src"${d?' disabled':''}>File</label></div>
+      <input class="inp" value="D:\\MeoVision\\samples\\P-1024\\T3_ng" ${d?'disabled':''} aria-label="Thư mục ảnh"></div>
+     <div class="fs"><label class="chk"><input type="checkbox"${d||!off?' disabled':''}> Gửi kết quả cho máy (chỉ khi OFFLINE, ảnh camera)</label>
+      <label class="chk"><input type="checkbox" checked${d?' disabled':''}> Dừng ở ảnh NG đầu tiên</label></div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn big pri"${dis(d)}>Chạy 1 ảnh</button><button class="btn big"${dis(d)}>Chạy cả thư mục</button></div>
+     <div class="fs"><div class="lg">Kết quả chạy thư mục (ví dụ)</div><div class="note-inline">42 ảnh · 40 OK · 2 NG (đúng nhãn 41/42) · trung bình 71 ms, lớn nhất 96 ms</div></div></div>`;
+  }
+  // counts
+  const rows=[['T1','Định vị trên',2453,0,'38'],['T2','Đọc mã',2448,5,'61'],['T3','Kiểm khuyết dưới',2418,S.scen==='ng'?37:35,'72'],['T4','Đo khoảng cách chân',2450,3,'44']];
+  return `<div class="manual"><table class="g"><thead><tr><th>Lệnh</th><th>Tên</th><th>OK</th><th>NG</th><th>ms TB</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td class="num">${r[2]}</td><td class="num" style="${r[3]?'color:var(--ng);font-weight:600':''}">${r[3]}</td><td class="num">${r[4]}</td></tr>`).join('')}</tbody></table>
+    <div class="fs"><div class="lg">NG theo lý do (ca này)</div><table class="g"><tbody><tr><td>T3 · Vết xước</td><td class="num">21</td></tr><tr><td>T3 · Thiếu chi tiết</td><td class="num">14</td></tr><tr><td>T2 · Không đọc được mã</td><td class="num">5</td></tr><tr><td>T4 · Ngoài dung sai</td><td class="num">3</td></tr></tbody></table></div>
+    <button class="btn big">${t('reset')}</button><div class="note-inline">Đặt lại bộ đếm: Vận hành được phép, có ghi nhật ký (ai, lúc nào, số cũ).</div></div>`;
+}
+
+/* ===== các form ===== */
+function win(id,icon,title,x,y,w,hh,body){
+  return `<div class="form" style="left:${x}px;top:${y}px;width:${w}px;height:${hh}px" role="dialog" aria-label="${esc(title)}"><div class="ftitle"><svg><use href="#${icon}"/></svg>${esc(title)}<button class="x" data-close="1" aria-label="Đóng">✕</button></div><div class="fbody">${body}</div></div>`;
+}
+function tabs(form,list){
+  const cur=S.ftab[form]||list[0][0];
+  return {cur,html:`<div class="ftabs" role="tablist">${list.map(([k,l])=>`<button class="ftab" role="tab" data-ftab="${form}:${k}" aria-selected="${cur===k}">${l}</button>`).join('')}</div>`};
+}
+function editLock(){
+  if(!can('eng')) return `<div class="why-box"><svg width="16" height="16"><use href="#i-lock"/></svg>Chỉ xem. Sửa cần quyền Kỹ sư.</div>`;
+  if(S.online) return `<div class="why-box">Đang ONLINE — các ô sửa bị khoá để không đổi cấu hình khi máy đang gửi lệnh. Chuyển OFFLINE (nhấn giữ 1 s) để sửa.</div>`;
+  return '';
+}
+const ro=()=>!can('eng')||S.online;
+const sideBtns=(list,kind)=>`<div class="side">${list.map(([l,c])=>`<button class="btn"${dis(c,kind)}>${l}</button>`).join('')}</div>`;
+
+function renderForm(){
+  const s=S.screen, L=ro();
+  if(s==='start'){
+    // Các bước 1–5 là StartupSequence đã có (Ch17–18, chữ lấy từ vi-VN.json); 6–7 là phần Ch19–21 sẽ thêm.
+    const lost=S.scen==='lost';
+    const steps=[
+      ['ok','Thư mục dữ liệu','D:\\MeoVision — còn trống 412.0 GB','0.1 s'],
+      ['ok','File ngôn ngữ','3 ngôn ngữ, đủ khoá','0.1 s'],
+      ['ok','Môi trường VisionPro','VisionPro 9.0 CR2, 42 tính năng có license','6.8 s'],
+      ['ok','Cấu hình máy','AOI-02: 2 camera, 1 đèn, 2 kênh','0.2 s'],
+      [lost?'warn':'ok','Thiết bị',lost?'2/3 thiết bị đã kết nối — BottomCam chưa kết nối: GigE timeout 2000 ms — đang tự thử lại':'3 thiết bị đã kết nối','2.4 s'],
+      ['run','Sản phẩm P-1024','Nạp job: T1 ✓ 3.1 s · T2 ✓ 2.8 s · T3 ✓ 4.9 s · T4 … (3/4)','10.8 s'],
+      ['wait','Kênh giao tiếp',S.topo==='plc'?'CH1, CH2 — PLC 192.168.1.10:5002':'CH1 :10001, CH2 :10002',''],
+    ];
+    const ic={ok:'<span style="color:var(--ok);font-weight:700">✓</span>',warn:'<span style="color:var(--warn);font-weight:700">!</span>',run:'<span style="color:var(--sel);font-weight:700">⟳</span>',wait:'<span style="color:var(--txt3)">○</span>'};
+    return '<div class="dim" style="background:rgba(20,24,28,.75)"></div>'+win('start','i-app','MeoVision — khởi động',560,190,800,600,`
+      <div style="display:flex;align-items:center;gap:14px;padding:6px 6px 0"><svg width="44" height="44"><use href="#i-app"/></svg><div><div style="font-size:20px;font-weight:600">MeoVision 1.0</div><div class="note-inline">AOI-02 · sản phẩm P-1024 · đã chạy 24.2 s</div></div></div>
+      <div class="gwrap" style="flex:1"><table class="g"><tbody>${steps.map((x,i)=>`<tr${x[0]==='run'?' class="sel"':''}><td style="width:28px;text-align:center">${ic[x[0]]}</td><td style="width:180px">${i+1}. ${x[1]}</td><td style="white-space:normal">${esc(x[2])}</td><td class="num" style="width:60px">${x[3]}</td></tr>`).join('')}</tbody></table></div>
+      <div class="bar" style="height:10px;background:#e3e3e3;position:relative"><i style="position:absolute;inset:0 auto 0 0;width:78%;background:var(--sel)"></i></div>
+      <div class="note-inline">${lost?'Thiết bị không bắt buộc cho khởi động: phần mềm vẫn mở, nhưng KHÔNG tự ONLINE cho tới khi BottomCam kết nối (Cài đặt › Hệ thống). Lệnh dùng BottomCam sẽ trả ERR,CAM.':'Xong cả 7 bước → tự ONLINE (Cài đặt › Hệ thống). Bước hỏng loại "bắt buộc" (dữ liệu, VisionPro, cấu hình máy) → dừng, hiện lý do, không mở màn chính.'} Lần chạm VisionPro đầu và nạp job là phần chậm nhất (spike: 14–18 s cho 2 job).</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn">Mở thư mục log</button><button class="btn" aria-disabled="true" data-why="Chỉ bấm được khi khởi động dừng vì lỗi">Thoát</button></div>`);
+  }
+  if(s==='user') return '<div class="dim"></div>'+win('user','i-user',t('user'),760,330,420,300,`
+    <div class="kv" style="padding:14px 10px"><label>Người dùng</label><select class="inp"><option>${roleName('op')}</option><option selected>${roleName('eng')}</option><option>${roleName('adm')}</option></select>
+    <label>Mật khẩu</label><input class="inp" type="password" value="" aria-label="Mật khẩu"></div>
+    <div style="display:flex;gap:8px;padding:0 10px"><button class="btn big pri" style="flex:1">${t('user')}</button><button class="btn big">Đổi mật khẩu</button></div>
+    <div class="note-inline" style="padding:8px 10px">Ba vai trò. Kỹ sư/Quản trị tự đăng xuất về Vận hành sau 10 phút không thao tác. Không khoá tài khoản khi nhập sai.</div>`);
+
+  if(s==='camera'){
+    const tb=tabs('camera',[['cam','Camera'],['light','Đèn']]);
+    const body = tb.cur==='cam' ? `<div class="pane"><div class="colv" style="width:330px"><div class="gwrap"><table class="g"><thead><tr><th>Vai trò</th><th>Loại</th><th>Địa chỉ / SN</th><th>Trạng thái</th></tr></thead><tbody>
+      <tr class="sel"><td>TopCam</td><td>Cognex GigE</td><td class="mono">24130517</td><td><span class="pill ok">Kết nối</span></td></tr>
+      <tr><td>BottomCam</td><td>Cognex GigE</td><td class="mono">24130588</td><td><span class="pill ${S.scen==='lost'?'ng':'ok'}">${S.scen==='lost'?'Mất · thử lại 4':'Kết nối'}</span></td></tr></tbody></table></div>
+      <div class="note-inline">Danh sách lấy từ <span class="mono">machine.json</span>. Đổi camera thật = sửa vai trò ở Cài đặt › Thiết bị, sản phẩm không phải sửa.</div></div>
+      <div style="flex:1;min-width:0;border:1px solid var(--edge);display:flex;flex-direction:column;background:#fff" title="CogAcqFifoEditV2 nhúng nguyên bản">
+       <div class="cogtb"><i>▶</i><i class="b">⚡</i><i class="b">▭</i><i class="b">⧉</i><span class="sep"></span><i class="b">⟲</i><span class="sep"></span><i class="b">?</i><span class="gone">đã ẩn: Open · Save · Save As</span></div>
+       <div style="display:flex;flex:1;min-height:0">
+        <div style="width:380px;border-right:1px solid #CFCFCF;display:flex;flex-direction:column"><div class="cogtabs"><span class="on">Image Properties</span><span>Exposure</span><span>Strobe &amp; Trigger</span><span>ROI</span></div>
+         <div class="kv" style="grid-template-columns:150px 1fr;padding:10px;font-size:12.5px"><label>Device</label><span>GigE · 24130517 (TopCam)</span><label>Video Format</label><span>Generic GigEVision (Mono)</span><label>Exposure (ms)</label><input class="inp" value="1.50"${L?' disabled':''}><label>Brightness</label><input class="inp" value="0.50"${L?' disabled':''}><label>Contrast</label><input class="inp" value="0.50"${L?' disabled':''}><label>Timeout (ms)</label><input class="inp" value="2000"${L?' disabled':''}></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0"><div class="cogrec"><span>LastRun.OutputImage</span><span>▾</span></div><div class="mini-disp" style="flex:1"><canvas data-kind="align" data-res="idle"></canvas></div></div></div>
+       <div class="cogstat"><span style="color:#2fb35c">●</span><span class="mono">31ms</span><span class="mono">2448×2048 Mono8</span></div></div>
+      <div class="colv" style="width:270px">${editLock()}
+       <button class="btn big"${dis(L)}>Chụp 1 ảnh</button><button class="btn big"${dis(L)}>Live</button>
+       <div class="fs"><div class="lg">Ghi thông số đang chỉnh vào lệnh</div><select class="inp"${L?' disabled':''} aria-label="Lệnh"><option>T1 · Định vị trên</option><option>T2 · Đọc mã</option></select><button class="btn"${dis(L)}>Ghi phơi sáng + đèn vào T1</button></div>
+       <button class="btn"${dis(!can('eng'))}>Lưu ảnh đang xem…</button><button class="btn"${dis(!can('eng'))}>Quét lại camera</button>
+       <div class="note-inline">Editor gốc của VisionPro (như RefVis-A và các repo GitHub). Thông số chạy thật nằm trong bảng lệnh của sản phẩm, nên có nút "Ghi vào lệnh". Live/chụp thử chỉ khi OFFLINE.</div></div></div>`
+    : `<div class="pane"><div class="colv" style="flex:1"><div class="gwrap"><table class="g"><thead><tr><th>Vai trò</th><th>Giao thức</th><th>Cổng</th><th>Kênh</th><th>Trạng thái</th></tr></thead><tbody><tr class="sel"><td>MainLight</td><td>ASCII</td><td class="mono">COM3 · 9600</td><td>A,B,C,D</td><td><span class="pill ok">Kết nối</span></td></tr></tbody></table></div>
+      ${editLock()}<div class="kv">${['A','B','C','D'].map((c,i)=>`<label>Kênh ${c}</label><div style="display:flex;gap:8px;align-items:center"><input type="range" min="0" max="255" value="${[180,120,0,0][i]}" style="flex:1"${L?' disabled':''} aria-label="Kênh ${c}"><span class="mono" style="width:40px;text-align:right">${[180,120,0,0][i]}</span></div>`).join('')}</div>
+      <div class="note-inline">Giá trị ở đây chỉ để thử. Giá trị chạy thật nằm trong từng job của sản phẩm (mỗi lệnh có thể bật kênh khác nhau).</div></div></div>`;
+    return win('camera','i-cam',t('camera'),120,150,1500,760,tb.html+body);
+  }
+
+  if(s==='calib'){
+    const tb=tabs('calib',[['np','N-Point (9 điểm)'],['rot','Tâm xoay'],['map','Ánh xạ 2 camera'],['res','Kết quả'],['cog','Editor VisionPro']]);
+    const pts=[[-2,-2],[0,-2],[2,-2],[-2,0],[0,0],[2,0],[-2,2],[0,2],[2,2]];
+    const grid=`<div class="gwrap" style="max-height:360px"><table class="g"><thead><tr><th>#</th><th>Ảnh X</th><th>Ảnh Y</th><th>Máy X</th><th>Máy Y</th><th>Sai số px</th></tr></thead><tbody>${pts.map((p,i)=>`<tr${i===4?' class="sel"':''}><td>${i+1}</td><td class="num">${(1224+p[0]*231.4+((i*7)%3-1)*.3).toFixed(1)}</td><td class="num">${(1024+p[1]*230.9).toFixed(1)}</td><td class="num">${(100+p[0]).toFixed(3)}</td><td class="num">${(50+p[1]).toFixed(3)}</td><td class="num">${[.41,.38,.62,.29,.12,.47,.55,.33,.58][i]}</td></tr>`).join('')}</tbody></table></div>`;
+    const flow=`<div class="seq"><span class="done">1 · Máy về điểm 1</span><span class="done">2 · Chụp + tìm dấu</span><span class="now">3 · Lặp 9 điểm (5/9)</span><span>4 · Xoay ±U</span><span>5 · Tính + lưu</span></div>`;
+    const cogEd=`<div style="border:1px solid var(--edge);background:#fff;display:flex;flex-direction:column;flex:1;min-height:0" title="CogCalibNPointToNPointEditV2 nhúng nguyên bản">
+      <div class="cogtb"><i>▶</i><i class="b">⚡</i><i class="b">▭</i><i class="b">⧉</i><span class="sep"></span><i class="b">⟲</i><span class="sep"></span><i class="b">?</i><span class="gone">đã ẩn: Open · Save · Save As</span></div>
+      <div class="cogtabs"><span class="on">Calibrate</span><span>Origin</span><span>RunParams</span><span>Graphics</span><span>Result</span></div>
+      <div style="padding:8px;overflow:auto;flex:1"><table class="g"><thead><tr><th>N</th><th>Uncalibrated X</th><th>Uncalibrated Y</th><th>Raw Calibrated X</th><th>Raw Calibrated Y</th></tr></thead><tbody>${pts.map((p,i)=>`<tr${i===0?' class="sel"':''}><td>${i}</td><td class="num">${(1224+p[0]*231.4).toFixed(1)}</td><td class="num">${(1024+p[1]*230.9).toFixed(1)}</td><td class="num">${100+p[0]}</td><td class="num">${50+p[1]}</td></tr>`).join('')}</tbody></table>
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;font-size:12.5px"><span>Degrees Of Freedom: Scaling, Aspect, Rotation, Skew And Translation</span><span></span><button class="btn"${dis(L)}>Grab calibration image</button><button class="btn"${dis(L)}>Compute Calibration</button></div>
+       <div style="margin-top:8px;font-size:12.5px">Calibration Info: <b style="color:var(--ng);font-style:italic">Not Calibrated</b></div></div>
+      <div class="cogstat"><span style="color:#2fb35c">●</span><span class="mono">0ms</span><span class="mono">0ms</span></div></div>
+      <div class="vpnote">Editor gốc dùng để KIỂM TRA hoặc chỉnh tay (giống form ánh xạ của RefVis-C). Luồng máy dẫn ở tab N-Point ghi vào cùng đối tượng hiệu chuẩn này. Chữ trong editor là tiếng Anh.</div>`;
+    const left = tb.cur==='cog' ? cogEd : tb.cur==='np'? `${flow}${grid}<div class="note-inline">Máy dẫn: mỗi điểm máy gửi <span class="mono">CN,i,X,Y</span>, vision chụp và trả lại toạ độ ảnh. Có thể nhập tay khi chưa có máy.</div>`
+      : tb.cur==='res'? `<div class="kv"><label>Hiệu chuẩn</label><b>Calib-1 · BottomCam</b><label>Ngày</label><span>2026-10-02 14:20 · Kỹ sư</span><label>RMS</label><span>0.43 px <span class="pill ok">≤ 1.0</span></span><label>Kích thước pixel</label><span>0.00866 × 0.00867 mm</span><label>Tâm xoay</label><span>X 101.204 · Y 49.877</span><label>Hạn kiểm lại</label><span>2026-11-02 <span class="pill warn">còn 17 ngày</span></span></div><div class="note-inline">Lưu kèm ảnh từng điểm và bản cũ (khôi phục được). Hiệu chuẩn thuộc MÁY (<span class="mono">machine\\calibration</span>), không thuộc sản phẩm.</div>`
+      : `<div class="note-inline" style="padding:8px 0">${tb.cur==='rot'?'Xoay trục U theo 3–5 góc, fit đường tròn qua tâm dấu → tâm xoay. Hiện bán kính, số điểm và sai số fit.':'Hai camera nhìn cùng một tấm chuẩn: tạo phép biến đổi camera↔camera. Dùng khi kết quả của camera trên phải đổi sang toạ độ camera dưới.'}</div>`;
+    return win('calib','i-cal',t('calib'),160,130,1480,800,tb.html+`<div class="pane"><div class="colv" style="width:250px"><div class="gwrap"><table class="g"><thead><tr><th>Hiệu chuẩn</th><th>Camera</th></tr></thead><tbody><tr class="sel"><td>Calib-1 · 9 điểm</td><td>BottomCam</td></tr><tr><td>Calib-2 · 11 điểm</td><td>BottomCam</td></tr><tr><td>Calib-3 · ánh xạ</td><td>TopCam</td></tr></tbody></table></div>${sideBtns([['Thêm',L],['Nhân bản',L],['Xoá',L]])}</div>
+      <div class="colv" style="flex:1">${editLock()}${left}</div><div class="colv" style="width:520px"><div class="tbe"><i class="on">↖</i><i>✥</i><i>＋</i><i>－</i><i>▣</i><span style="margin-left:auto;font-size:12px;color:var(--txt2)">Điểm 5/9 · BottomCam</span></div><div class="mini-disp" style="flex:1"><canvas data-kind="grid" data-res="idle"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn big"${dis(L)}>Bắt đầu (máy dẫn)</button><button class="btn big"${dis(L)}>Chỉnh tay</button></div></div></div>`);
+  }
+
+  if(s==='jobs'){
+    const tb=tabs('jobs',[['cmd','Bảng lệnh'],['tool','Job (ToolBlock)'],['out','Kết quả trả về & giới hạn']]);
+    const cmds=[['T1','Định vị trên','TopCam','—','Calib-3','1','T1,OK,X,Y,U','CH1'],['T2','Đọc mã DataMatrix','TopCam','—','—','2','T2,OK,code','CH1'],['T3','Kiểm khuyết mặt dưới','BottomCam','T3_defect.vpp','—','3','T3,OK|NG','CH2'],['T4','Đo khoảng cách chân','BottomCam','T4_gauge.vpp','Calib-1','4','T4,OK,d1,d2','CH2']];
+    let body;
+    if(tb.cur==='cmd') body=`<div class="pane"><div class="colv" style="flex:1">${editLock()}<div class="gwrap"><table class="g"><thead><tr><th>Lệnh</th><th>Tên hiển thị</th><th>Kênh</th><th>Camera</th><th>Job .vpp</th><th>Hiệu chuẩn</th><th>Khung</th><th>Mẫu trả lời</th><th>Timeout</th><th>Thử lại</th></tr></thead><tbody>${cmds.map((c,i)=>`<tr${i===2?' class="sel"':''}><td class="mono">${c[0]}</td><td>${c[1]}</td><td class="mono" title="${channels()[c[7]==='CH1'?0:1].name} · ${channels()[c[7]==='CH1'?0:1].addr}">${c[7]}</td><td>${c[2]}</td><td class="mono">${c[3]==='—'?'T'+(i+1)+'_'+['align','code'][i]+'.vpp':c[3]}</td><td>${c[4]}</td><td class="num">${c[5]}</td><td class="mono">${c[6]}</td><td class="num">1000</td><td class="num">1</td></tr>`).join('')}</tbody></table></div>
+      <div class="note-inline">Bảng lệnh thuộc SẢN PHẨM (<span class="mono">product.json</span>); danh sách kênh thuộc MÁY (<span class="mono">machine.json</span>, form Giao tiếp). Lệnh lạ hoặc job lỗi → trả <span class="mono">Tn,ERR,&lt;mã&gt;</span> ngay; lệnh đến sai kênh → <span class="mono">Tn,ERR,CHANNEL</span>. Sản phẩm dùng kênh mà máy không có → không kích hoạt được. Lệnh hệ thống <span class="mono">SW</span>, <span class="mono">HB</span> nhận trên mọi kênh.</div></div>${sideBtns([['Thêm lệnh',L],['Xoá',L],['Lên',L],['Xuống',L],['Hoàn tác',L],['Lưu',L]])}</div>`;
+    else if(tb.cur==='tool') body=`<div class="pane"><div class="colv" style="flex:1">${editLock()}<div style="display:flex;gap:8px;align-items:center;font-size:12.5px"><b>T3_defect.vpp</b><span class="pill warn">bản sao làm việc</span><span class="note-inline">Bản đang chạy không bị sửa cho tới khi bấm Lưu.</span></div>
+      <div style="border:1px solid var(--edge);display:flex;flex-direction:column;flex:1;min-height:0;background:#fff">
+       <div class="cogtb" title="Thanh công cụ gốc của CogToolBlockEditV2"><i>▶</i><i class="b">▭</i><i class="b">⧉</i><span class="sep"></span><i class="b">✓</i><i class="b">⟲</i><i class="b">▤</i><i class="b">{}</i><i class="b">⚒</i><i class="b">▦</i><span class="sep"></span><i class="b">ⓘ</i><i class="b">?</i>
+        <span class="gone" title="MeoVision ẩn các nút này khi nhúng: lưu phải qua nút Lưu bên dưới để có sao lưu + nhật ký">đã ẩn: Open · Save · Save As · Protect (mật khẩu) · Reset</span></div>
+       <div style="display:flex;flex:1;min-height:0">
+        <div style="width:430px;border-right:1px solid #CFCFCF;display:flex;flex-direction:column"><div class="cogtabs"><span class="on">Tools</span><span>Inputs/Outputs</span><span>Graphics</span></div>
+         <div class="cogtree"><div class="in">⇤ [Inputs]</div><div class="in" style="padding-left:18px">↦ InputImage</div><div class="tool">⚙ CogPMAlignTool1 <span style="color:#2fb35c">●</span></div><div class="out" style="padding-left:18px">→ Results.Item[0].GetPose()</div><div class="out" style="padding-left:18px">→ Results.Item[0].Score</div><div class="tool">⚙ CogFixtureTool1 <span style="color:#2fb35c">●</span></div><div class="tool">⚙ CogBlobTool1 <span style="color:${S.scen==='ng'?'#e0483a':'#2fb35c'}">●</span></div><div class="out" style="padding-left:18px">→ Results.GetBlobs().Count</div><div class="tool">⚙ CogBlobTool2 <span style="color:#2fb35c">●</span></div><div class="out">⇥ [Outputs]</div><div class="out" style="padding-left:18px">↤ OK · MaxArea · Reason</div></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0"><div class="cogrec"><span>LastRun.CogBlobTool1.InputImage</span><span>▾</span></div><div class="mini-disp" style="flex:1"><canvas data-kind="defect" data-res="${S.scen==='ng'?'ng':'ok'}"></canvas></div></div></div>
+       <div class="cogstat"><span style="color:${S.scen==='ng'?'#e0483a':'#2fb35c'}">●</span><span class="mono">16.8ms</span><span class="mono">19.4ms</span></div></div>
+      <div class="vpnote">Chữ trong editor là tiếng Anh (theo ngôn ngữ bản VisionPro cài trên máy), không dịch được qua file ngôn ngữ của MeoVision. Editor phải dùng font mặc định (không thừa hưởng font của form) — spike: thừa hưởng font 9.75 làm dòng thời gian chồng chữ.</div>
+      <div style="display:flex;gap:8px;align-items:center"><button class="btn"${dis(!can('eng'))}>Chạy ảnh này</button><button class="btn"${dis(!can('eng'))}>Chạy bộ ảnh có nhãn (42)</button><span class="note-inline">Kết quả bộ ảnh: 41/42 đúng nhãn · 1 NG giả (ảnh 17)</span><span style="flex:1"></span><button class="btn pri"${dis(L)}>Lưu (sao lưu bản cũ)</button></div></div></div>`;
+    else body=`<div class="pane"><div class="colv" style="flex:1">${editLock()}<div class="gwrap"><table class="g"><thead><tr><th>Lệnh</th><th>Thứ tự</th><th>Output trong job</th><th>Tên</th><th>Chuẩn</th><th>Dưới</th><th>Trên</th><th>Bù</th><th>Đơn vị</th><th>Định dạng</th></tr></thead><tbody>
+      <tr><td class="mono">T1</td><td class="num">1</td><td class="mono">X</td><td>Toạ độ X</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">+0.020</td><td>mm</td><td class="mono">0.000</td></tr>
+      <tr><td class="mono">T1</td><td class="num">2</td><td class="mono">Y</td><td>Toạ độ Y</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">-0.015</td><td>mm</td><td class="mono">0.000</td></tr>
+      <tr class="sel"><td class="mono">T3</td><td class="num">1</td><td class="mono">MaxArea</td><td>Vết xước lớn nhất</td><td class="num">0</td><td class="num">0</td><td class="num">0.5</td><td class="num">0</td><td>mm²</td><td class="mono">0.0</td></tr>
+      <tr><td class="mono">T4</td><td class="num">1</td><td class="mono">D12</td><td>Khoảng cách chân 1–2</td><td class="num">2.50</td><td class="num">2.45</td><td class="num">2.55</td><td class="num">0</td><td>mm</td><td class="mono">0.000</td></tr></tbody></table></div>
+      <div class="note-inline">Giới hạn và bù nằm NGOÀI job: kỹ sư chỉnh số mà không mở .vpp. Mỗi lần lưu ghi ai/lúc nào/giá trị cũ.</div></div></div>`;
+    return win('jobs','i-job',t('jobs'),110,120,1560,820,tb.html+body);
+  }
+
+  if(s==='comm'){
+    const tb=tabs('comm',[['link','Kênh'],['proto','Giao thức'],['test','Thử gửi/nhận']]);
+    const plc=S.topo==='plc', CH=channels(), ci=S.ch||0, c=CH[ci];
+    const chTable=`<div class="gwrap"><table class="g"><thead><tr><th>Kênh</th><th>Tên</th><th>Kiểu</th><th>${plc?'Vùng bắt tay':'Cổng nghe'}</th><th>Lệnh</th><th>Trạng thái</th></tr></thead><tbody>${CH.map((x,i)=>`<tr data-ch="${i}" style="cursor:pointer"${i===ci?' class="sel"':''}><td class="mono">${x.id}</td><td>${x.name}</td><td>${x.kind}</td><td class="mono">${x.addr}</td><td class="mono">${x.cmds}</td><td><span class="pill ${S.online?'ok':'warn'}">${plc?'nhịp tim ✓':'1 client'}</span></td></tr>`).join('')}</tbody></table></div>`;
+    const cc24=`<div class="note-inline" style="color:var(--txt3)" title="Thư viện NDM của VisionPro (EtherNet/IP, PROFINET, SLMP) chỉ tạo được qua card CC24 — máy này: 0 card">Card Cognex CC24 (NDM): không có trên máy này.</div>`;
+    const tree=CH.map((x,i)=>`<div${i===ci?' class="sel"':''} data-ch="${i}" style="cursor:pointer">● ${x.id} · ${x.name} · ${plc?x.addr.split(' ')[0]:x.addr.split(':')[1]}</div>`).join('');
+    let body;
+    if(tb.cur==='link') body=`<div class="pane"><div class="colv" style="width:640px">${chTable}
+       <div style="display:flex;gap:8px"><button class="btn"${dis(L)}>Thêm kênh</button><button class="btn"${dis(L)}>Xoá kênh</button></div>
+       <div class="note-inline">Kênh thuộc MÁY (<span class="mono">machine.json</span>). Một trạm hoặc chụp lần lượt: 1 kênh. Các trạm có thể chụp cùng lúc: mỗi trạm 1 kênh — với PLC đây là bắt buộc vì một vùng bắt tay chỉ xử lý một lần chụp mỗi lúc. Card mạng của camera không liên quan tới kênh.</div>${cc24}</div>
+      <div class="colv" style="flex:1">${editLock()}<div class="kv"><label>Kênh</label><b>${c.id} · ${c.name}</b><label>Kiểu</label><select class="inp"${L?' disabled':''}><option${!plc?' selected':''}>TCP server (PC control nối vào)</option><option>TCP client (vision nối ra)</option><option${plc?' selected':''}>PLC Mitsubishi (MC 3E / SLMP)</option><option disabled>PLC Modbus TCP (làm sau)</option><option disabled>Card Cognex CC24 — NDM (chưa có card)</option></select>
+       ${plc?`<label>PLC</label><span class="mono">192.168.1.10:5002 · MC 3E nhị phân (dùng chung cho mọi kênh)</span><label>Vùng bắt tay</label><input class="inp" value="M${c.base}–M${c.base+15}"${L?' disabled':''}><label>Vùng dữ liệu</label><input class="inp" value="D${c.base}–D${c.base+29}"${L?' disabled':''}><label>Chu kỳ quét</label><input class="inp" value="20 ms"${L?' disabled':''}><label>Nhịp tim</label><input class="inp" value="D${c.base+30} đảo mỗi 500 ms · báo lỗi sau 3 lần"${L?' disabled':''}>`
+        :`<label>Địa chỉ nghe</label><input class="inp" value="${c.addr.replace('192.168.1.20','192.168.1.20 (card mạng điều khiển)')}"${L?' disabled':''}><label>Ký tự kết thúc</label><input class="inp" value="\\r (CR)"${L?' disabled':''}><label>Client cho phép</label><input class="inp" value="${S.topo==='tcp1'?'127.0.0.1':'192.168.1.30'}"${L?' disabled':''}><label>Client đang nối</label><span class="mono">${c.peer}</span>`}
+       <label>Lệnh của kênh</label><span class="mono">${c.cmds} <span class="note-inline">(cột Kênh trong bảng lệnh của sản phẩm)</span></span>
+       <label>Khi OFFLINE</label><span>Trả <span class="mono">Tn,ERR,OFFLINE</span> ngay (máy không phải chờ timeout)</span></div>
+       ${plc?`<div class="fs"><div class="lg">Bắt tay ${c.id} (đang chạy, cập nhật 20 ms) — tên tín hiệu theo mô hình NDM của Cognex</div><div class="bits">${[[0,'Trigger',1,''],[1,'Trigger Ack',1,''],[2,'Acquiring',0,''],[3,'Inspection Complete',0,''],[4,'Results Valid · NG',0,'red'],[5,'Online (Ready)',1,''],[6,'Error',0,'red'],[7,'Job Change Request',0,''],[8,'Set Offline',0,'']].map(b=>`<div class="bit"><b>M${c.base+b[0]}</b><span class="v"><span class="led ${b[2]?(b[3]||'on'):''}"></span>${b[1]}</span></div>`).join('')}<div class="bit"><b>D${c.base+30}</b><span class="v"><span class="led on"></span>Nhịp tim</span></div></div></div>`
+        :`<div class="note-inline">${S.topo==='tcp1'?'PC control chạy cùng IPC: nối 127.0.0.1, không đi qua card mạng nào.':'PC control ở máy khác: nối qua card mạng điều khiển (192.168.1.x), mở cổng 10001–10002 trên tường lửa, chỉ nhận client đã khai báo.'}</div>`}</div></div>`;
+    else if(tb.cur==='proto') body=`<div class="pane"><div class="colv" style="flex:1"><div class="gwrap"><table class="g"><thead><tr><th>Hướng</th><th>Ví dụ</th><th>Ý nghĩa</th></tr></thead><tbody>
+      <tr><td>Máy → vision</td><td class="mono">T1,SN88213\\r</td><td>Chạy lệnh T1 cho sản phẩm có serial SN88213</td></tr>
+      <tr><td>Vision → máy</td><td class="mono">T1,OK,12.418,-3.207,0.42\\r</td><td>Kết quả + output theo thứ tự ở tab "Kết quả trả về"</td></tr>
+      <tr><td>Vision → máy</td><td class="mono">T3,NG,1.8\\r</td><td>NG kèm giá trị đo</td></tr>
+      <tr><td>Vision → máy</td><td class="mono">T3,ERR,CAM\\r</td><td>Không chạy được (camera, job, offline, timeout) — khác NG</td></tr>
+      <tr><td>Máy → vision</td><td class="mono">SW,P-2048\\r</td><td>Đổi sản phẩm; trả <span class="mono">SW,OK</span> hoặc <span class="mono">SW,ERR,&lt;lý do&gt;</span></td></tr>
+      <tr><td>Hai chiều</td><td class="mono">HB\\r</td><td>Nhịp tim mỗi 1 s; mất 3 lần → chip kết nối đỏ</td></tr></tbody></table></div>
+      <div class="note-inline">Mọi kênh dùng cùng bản tin. Lệnh gửi vào sai kênh (vd T3 vào ${CH[0].id}) → <span class="mono">T3,ERR,CHANNEL</span>. Trả lời luôn mang mã lệnh nên PC control ghép được dù hai kênh chạy song song.</div>
+      ${plc?`<div class="gwrap"><table class="g"><thead><tr><th>Mỗi kênh (vd ${CH[0].id}, gốc ${CH[0].base})</th><th>${CH[0].id}</th><th>${CH[1].id}</th><th>Ý nghĩa</th></tr></thead><tbody>
+        <tr><td>Mã lệnh</td><td class="mono">D100</td><td class="mono">D200</td><td>Số lệnh (1 = T1…), PLC ghi trước khi bật Trigger</td></tr>
+        <tr><td>Serial</td><td class="mono">D101–D110</td><td class="mono">D201–D210</td><td>Chuỗi ASCII 20 ký tự</td></tr>
+        <tr><td>Kết quả</td><td class="mono">D111–D129</td><td class="mono">D211–D229</td><td>Output theo thứ tự đã khai, số thực 32 bit</td></tr>
+        <tr><td>Bắt tay</td><td class="mono">M100–M108</td><td class="mono">M200–M208</td><td>Trigger → Trigger Ack → Acquiring → Inspection Complete + Results Valid</td></tr>
+        <tr><td>Nhịp tim</td><td class="mono">D130</td><td class="mono">D230</td><td>Vision đảo mỗi 500 ms</td></tr></tbody></table></div>`:''}</div></div>`;
+    else body=`<div class="pane"><div class="colv" style="width:330px"><div class="gwrap" style="flex:1"><div class="tree">${tree}</div></div></div><div class="colv" style="flex:1"><div class="fs" style="flex:1;min-height:0"><div class="lg">Nhận / gửi (thời gian · hướng · nội dung) <label class="chk" style="display:inline-flex;margin-left:12px"><input type="checkbox"> Hex</label></div>
+      <div class="traffic"><div class="rx">10:42:18.305 CH1 ← T1,SN88213</div><div class="rx">10:42:18.306 CH2 ← T3,SN88213</div><div class="tx">10:42:18.343 CH1 → T1,OK,12.418,-3.207,0.42</div><div class="rx">10:42:18.344 CH1 ← T2,SN88213</div><div class="tx">10:42:18.405 CH1 → T2,OK,2410-AOI02-88213</div>${S.scen==='ng'?'<div class="tx">10:42:18.380 CH2 → T3,NG,1.8</div>':S.scen==='lost'?'<div class="er">10:42:18.307 CH2 → T3,ERR,CAM</div>':'<div class="tx">10:42:18.380 CH2 → T3,OK</div>'}<div class="er">10:42:18.900 CH1 → T4,ERR,CHANNEL (T4 thuộc CH2)</div><div class="rx">10:42:19.000 CH1 ← HB</div><div class="tx">10:42:19.001 CH1 → HB</div></div></div>
+      <div style="display:flex;gap:8px"><select class="inp" style="width:170px" aria-label="Kênh gửi thử"${L?' disabled':''}>${CH.map(x=>`<option>${x.id} · ${x.name}</option>`).join('')}</select><input class="inp" value="T3,SNTEST01" aria-label="Chuỗi gửi thử"${L?' disabled':''}><button class="btn"${dis(L)}>Gửi</button><label class="chk"><input type="checkbox"${L?' disabled':''}> Lặp mỗi</label><input class="inp" style="width:90px" value="1000 ms"${L?' disabled':''} aria-label="Chu kỳ lặp"></div>
+      <div class="note-inline">Gửi thử = giả làm máy gửi lệnh vào vision (chạy qua đúng đường xử lý thật). Chỉ khi OFFLINE.</div></div></div>`;
+    return win('comm','i-com',t('comm'),180,140,1380,760,tb.html+body);
+  }
+
+  if(s==='product'){
+    const E=!can('eng');
+    return win('product','i-prod',t('product'),260,150,1280,720,`<div class="pane"><div class="colv" style="flex:1"><div class="gwrap" style="flex:1"><table class="g"><thead><tr><th>Mã</th><th>Tên</th><th>Lệnh</th><th>Thiết bị cần</th><th>Sửa lần cuối</th><th>Kiểm tra</th></tr></thead><tbody>
+      <tr class="sel act"><td>● P-1024</td><td>Vỏ nhôm A</td><td class="num">4</td><td>TopCam, BottomCam, MainLight</td><td>2026-10-14 · Kỹ sư</td><td><span class="pill ok">Đủ</span></td></tr>
+      <tr><td>P-1031</td><td>Vỏ nhôm A (bản mạ đen)</td><td class="num">4</td><td>TopCam, BottomCam, MainLight</td><td>2026-09-30 · Kỹ sư</td><td><span class="pill ok">Đủ</span></td></tr>
+      <tr><td>P-2048</td><td>Nắp nhựa B</td><td class="num">3</td><td>TopCam, SideCam</td><td>2026-08-11 · Kỹ sư</td><td><span class="pill ng">Thiếu SideCam</span></td></tr></tbody></table></div>
+      <div class="note-inline">Mỗi sản phẩm là một thư mục tự chứa: <span class="mono">products\\P-1024\\{product.json, jobs\\*.vpp, golden, samples}</span>. Máy (PLC/PC control) cũng đổi được bằng lệnh <span class="mono">SW</span>. Không kích hoạt được sản phẩm thiếu thiết bị — nói rõ thiếu gì.</div></div>
+      ${sideBtns([['Chuyển sang',E],['Tạo từ bản sao',E||S.online],['Đổi tên',E||S.online],['Xoá',E||S.online],['Mở thư mục',E],['Khôi phục bản cũ',E||S.online]])}</div>`);
+  }
+
+  if(s==='history'){
+    return win('history','i-his',t('history'),140,130,1540,800,`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input class="inp" style="width:220px" value="2026-10-16 08:00 → 10:42" aria-label="Thời gian"><select class="inp" style="width:160px" aria-label="Lệnh"><option>Mọi lệnh</option><option>T3</option></select><select class="inp" style="width:140px" aria-label="Kết quả"><option>Chỉ NG</option><option>Tất cả</option></select><input class="inp" style="width:200px" placeholder="Serial" aria-label="Serial"><button class="btn pri">Lọc</button><span style="flex:1"></span><button class="btn">Xuất CSV</button><button class="btn"${dis(!can('eng'))}>Gói chẩn đoán…</button></div>
+      <div class="pane" style="border-top:1px solid var(--edge)"><div class="colv" style="width:700px"><div class="gwrap" style="flex:1"><table class="g"><thead><tr><th>Thời gian</th><th>Serial</th><th>Lệnh</th><th>KQ</th><th>Lý do</th><th>ms</th></tr></thead><tbody>
+      ${[['10:42:18.486','SN88213','T3','NG','Vết xước 1.8 mm² > 0.5',74],['10:31:02.117','SN88140','T3','NG','Thiếu chi tiết (blob 0/2)',71],['10:12:44.903','SN88001','T2','NG','Không đọc được mã',88],['09:58:20.331','SN87915','T3','NG','Vết xước 0.7 mm² > 0.5',73],['09:41:07.552','SN87822','T4','NG','D12 = 2.563 > 2.55',45]].map((r,i)=>`<tr${i===0?' class="sel"':''}><td class="mono">${r[0]}</td><td class="mono">${r[1]}</td><td class="mono">${r[2]}</td><td style="color:var(--ng);font-weight:700">${r[3]}</td><td>${r[4]}</td><td class="num">${r[5]}</td></tr>`).join('')}</tbody></table></div></div>
+      <div class="colv" style="flex:1"><div class="tbe"><i class="on">◐</i><i>↖</i><i>＋</i><i>－</i><span style="margin-left:8px;font-size:12px">Ảnh gốc + overlay · SN88213 · T3</span><span style="margin-left:auto;font-size:12px;color:var(--txt2)">D:\\Image\\2026-10-16\\NG\\T3</span></div><div class="mini-disp" style="flex:1"><canvas data-kind="defect" data-res="ng"></canvas></div>
+      <div style="display:flex;gap:8px"><button class="btn"${dis(!can('eng'))}>Chạy lại với job hiện tại</button><button class="btn"${dis(!can('eng'))}>Đánh dấu NG giả</button><button class="btn">Mở thư mục ảnh</button></div></div></div>`);
+  }
+
+  if(s==='settings'){
+    const tb=tabs('settings',[['disp','Hiển thị'],['dev','Thiết bị'],['img','Lưu ảnh'],['data','Lưu dữ liệu'],['users','Người dùng'],['sys','Hệ thống']]);
+    const A=!can('adm');
+    const lock=A?`<div class="why-box"><svg width="16" height="16"><use href="#i-lock"/></svg>Cài đặt hệ thống cần quyền Quản trị.</div>`:'';
+    let body;
+    if(tb.cur==='disp') body=`<div class="kv" style="max-width:720px"><label>Số khung ảnh</label><select class="inp"${A?' disabled':''}><option>4</option></select><label>Số cột tối đa</label><select class="inp"${A?' disabled':''}><option>2</option></select><label>Tên thiết bị</label><input class="inp" value="AOI-02"${A?' disabled':''}><label>Khung trống khi</label><span>Lệnh chưa chạy lần nào trong ca: hiện "Chờ lệnh T3"</span></div>
+      <div class="gwrap" style="max-width:900px"><table class="g"><thead><tr><th>Khung</th><th>Tên hiển thị</th><th>Lệnh</th><th>Hiện overlay</th></tr></thead><tbody>${DISPLAYS.map((d,i)=>`<tr><td class="num">${i+1}</td><td>${d.n}</td><td class="mono">${d.cmd}</td><td>Có</td></tr>`).join('')}</tbody></table></div>`;
+    else if(tb.cur==='dev') body=`<div class="gwrap"><table class="g"><thead><tr><th>Vai trò</th><th>Loại</th><th>Thiết lập</th><th>Trạng thái</th></tr></thead><tbody><tr><td>TopCam</td><td>CognexGigE</td><td class="mono">serialNumber=24130517 · timeoutMs=2000</td><td><span class="pill ok">Kết nối</span></td></tr><tr><td>BottomCam</td><td>CognexGigE</td><td class="mono">serialNumber=24130588 · timeoutMs=2000</td><td><span class="pill ${S.scen==='lost'?'ng':'ok'}">${S.scen==='lost'?'Mất':'Kết nối'}</span></td></tr><tr><td>MainLight</td><td>AsciiLight</td><td class="mono">Serial COM3 9600 · A,B,C,D</td><td><span class="pill ok">Kết nối</span></td></tr></tbody></table></div><div class="note-inline">Ghi vào <span class="mono">machine.json</span>. Áp dụng khi khởi động lại (hiện nút "Khởi động lại MeoVision").</div>`;
+    else if(tb.cur==='img') body=`<div class="kv" style="max-width:900px"><label>Thư mục</label><input class="inp" value="D:\\Image"${A?' disabled':''}><label>Ảnh gốc</label><select class="inp"${A?' disabled':''}><option>Chỉ NG</option><option>Tất cả</option><option>Không lưu</option></select><label>Ảnh kết quả</label><select class="inp"${A?' disabled':''}><option>Tất cả · JPG</option></select><label>Giữ ảnh</label><input class="inp" value="180 ngày"${A?' disabled':''}><label>Cảnh báo ổ đĩa</label><input class="inp" value="còn dưới 10 %"${A?' disabled':''}><label>Theo lệnh</label><span>T1 · T2 · T3 · T4 (bỏ chọn lệnh không cần lưu)</span></div><div class="note-inline">Lưu ảnh chạy nền, không làm chậm trả lời máy; hàng đợi đầy thì bỏ ảnh OK trước, giữ ảnh NG.</div>`;
+    else if(tb.cur==='data') body=`<div class="kv" style="max-width:900px"><label>Thư mục</label><input class="inp" value="D:\\Data"${A?' disabled':''}><label>File</label><span class="mono">Data_2026-10-16_P-1024.csv (mỗi ngày + sản phẩm 1 file)</span><label>Cột</label><span>Thời gian · Serial · Lệnh · KQ · lý do · mọi output đã khai báo</span></div>`;
+    else if(tb.cur==='users') body=`<div class="gwrap" style="max-width:900px"><table class="g"><thead><tr><th>Vai trò</th><th>Được làm</th><th>Mật khẩu</th></tr></thead><tbody><tr><td>${roleName('op')}</td><td>Xem, lọc lịch sử, đặt lại bộ đếm</td><td>không cần</td></tr><tr><td>${roleName('eng')}</td><td>+ Camera, hiệu chuẩn, lệnh & job, giao tiếp, chạy tay, chuyển/tạo/sửa sản phẩm, ONLINE/OFFLINE, thoát</td><td>có · đổi được</td></tr><tr><td>${roleName('adm')}</td><td>+ Cài đặt hệ thống, đặt lại mật khẩu Kỹ sư</td><td>có</td></tr></tbody></table></div><div class="kv" style="max-width:720px"><label>Tự đăng xuất</label><input class="inp" value="10 phút không thao tác"${A?' disabled':''}></div>`;
+    else body=`<div class="kv" style="max-width:900px"><label>Khởi động</label><span>Tự ONLINE sau khi mọi thiết bị của sản phẩm đã kết nối</span><label>Ngôn ngữ mặc định</label><select class="inp"${A?' disabled':''}><option>Tiếng Việt</option></select><label>Toàn màn hình</label><span>Có (ẩn thanh tác vụ Windows)</span><label>Vẽ ảnh khi chạy</label><select class="inp"${A?' disabled':''}><option>Mọi lần</option><option>Chỉ ảnh NG</option><option>Tắt (chạy nhanh nhất)</option></select><label>Nạp job lúc khởi động</label><span>Màn chờ có tiến độ từng job (spike: nạp 2 job mẫu mất 14–18 s vì lần chạm VisionPro đầu)</span><label>Tỉ lệ màn hình Windows</label><span>100 % khuyến nghị; đã thử 125 %: control VisionPro chạy được nếu không ép font</span><label>Phiên bản</label><span class="mono">MeoVision 1.0.0 · VisionPro 9.0 CR2 · .NET 4.8</span></div>`;
+    return win('settings','i-set',t('settings'),220,140,1400,760,tb.html+`<div class="pane"><div class="colv" style="flex:1">${lock}${body}</div>${sideBtns([['Áp dụng',A],['Lưu',A],['Hoàn tác',A],['Về mặc định',A]],'adm')}</div>`);
+  }
+  return '';
+}
+
+/* ===== vẽ ảnh giả lập ===== */
+function drawAll(){document.querySelectorAll('canvas[data-kind]').forEach(drawImg);}
+function drawImg(c){
+  const r=c.getBoundingClientRect(), W0=Math.max(200,Math.round(r.width)), H0=Math.max(120,Math.round(r.height));
+  // canvas nằm trong khung đã co bằng transform: dùng kích thước layout (offset) để khỏi mờ quá
+  const CW=c.offsetWidth||W0, CH=c.offsetHeight||H0; c.width=CW; c.height=CH;
+  const g=c.getContext('2d'), kind=c.dataset.kind, res=c.dataset.res;
+  // Giống CogDisplay thật: ảnh camera 2448×2048 (tỉ lệ 1.2) vừa khung, phần thừa là nền xanh navy cố định
+  // của VisionPro (đã thử: BackColor không đổi được nền này).
+  g.fillStyle='#0A0A64';g.fillRect(0,0,CW,CH);
+  const ar=2448/2048; let w=CW, h=CH;
+  if(CW/CH>ar){w=Math.round(CH*ar);} else {h=Math.round(CW/ar);}
+  g.save(); g.translate(Math.round((CW-w)/2),Math.round((CH-h)/2));
+  g.beginPath(); g.rect(0,0,w,h); g.clip();
+  const grd=g.createRadialGradient(w*.5,h*.45,10,w*.5,h*.5,Math.max(w,h)*.7);
+  grd.addColorStop(0,'#5a6168');grd.addColorStop(1,'#1d2226');g.fillStyle=grd;g.fillRect(0,0,w,h);
+  // nhiễu hạt cố định
+  let s=7;const rnd=()=>((s=(s*9301+49297)%233280)/233280);
+  g.fillStyle='rgba(255,255,255,.035)';for(let i=0;i<500;i++)g.fillRect(rnd()*w,rnd()*h,1.5,1.5);
+  const cx=w/2, cy=h/2, pw=Math.min(w*.6,h*1.0), ph=Math.min(h*.62,pw*.7);
+  const green='#3BE07A', red='#FF5A4A', cyan='#4FC3F7';
+  if(kind==='grid'){
+    const n=7, sz=Math.min(w,h)/(n+2);
+    for(let y=0;y<n;y++)for(let x=0;x<n;x++){g.fillStyle=(x+y)%2?'#e8e8e8':'#202020';g.fillRect(cx-(n/2)*sz+x*sz,cy-(n/2)*sz+y*sz,sz,sz);}
+    g.strokeStyle=green;g.lineWidth=2;g.beginPath();g.arc(cx,cy,sz*.45,0,7);g.stroke();
+    g.beginPath();g.moveTo(cx-sz,cy);g.lineTo(cx+sz,cy);g.moveTo(cx,cy-sz);g.lineTo(cx,cy+sz);g.stroke();return;
+  }
+  // chi tiết: tấm nhôm bo góc
+  g.fillStyle='#b9bec3';rr(g,cx-pw/2,cy-ph/2,pw,ph,ph*.12);g.fill();
+  g.fillStyle='#9aa0a6';rr(g,cx-pw/2+10,cy-ph/2+10,pw-20,ph-20,ph*.1);g.fill();
+  g.fillStyle='#2c3136';[[-.36,-.3],[.36,-.3],[-.36,.3],[.36,.3]].forEach(([a,b])=>{g.beginPath();g.arc(cx+a*pw,cy+b*ph,ph*.07,0,7);g.fill();});
+  g.lineWidth=2;
+  if(kind==='align'){
+    g.strokeStyle=res==='idle'?cyan:green;g.strokeRect(cx-pw/2-6,cy-ph/2-6,pw+12,ph+12);
+    g.beginPath();g.moveTo(cx-30,cy);g.lineTo(cx+30,cy);g.moveTo(cx,cy-30);g.lineTo(cx,cy+30);g.stroke();
+    g.strokeStyle=green;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+70,cy-0.5);g.stroke();
+  } else if(kind==='code'){
+    const q=Math.min(pw,ph)*.34, x0=cx-q/2, y0=cy-q/2, m=12;
+    for(let y=0;y<m;y++)for(let x=0;x<m;x++){const on=x===0||y===m-1||((x+y*3+x*y)%3===0&&y%2===0)||(x===m-1&&y%2===0)||(y===0&&x%2===0);g.fillStyle=on?'#15181b':'#d8dcdf';g.fillRect(x0+x*q/m,y0+y*q/m,q/m+.3,q/m+.3);}
+    g.strokeStyle=green;g.strokeRect(x0-6,y0-6,q+12,q+12);
+  } else if(kind==='defect'){
+    g.strokeStyle='#5d646a';g.lineWidth=1.5;g.beginPath();g.moveTo(cx-pw*.1,cy+ph*.05);g.lineTo(cx+pw*.12,cy-ph*.08);g.stroke();
+    g.lineWidth=2;
+    if(res==='ng'){g.strokeStyle='#e7eaec';g.lineWidth=3;g.beginPath();g.moveTo(cx+pw*.05,cy+ph*.14);g.lineTo(cx+pw*.22,cy+ph*.02);g.stroke();
+      g.strokeStyle=red;g.lineWidth=2.5;g.strokeRect(cx+pw*.03,cy-ph*.01,pw*.22,ph*.18);g.fillStyle=red;g.font='bold 14px Segoe UI, sans-serif';g.fillText('1.8 mm²',cx+pw*.03,cy-ph*.01-6);}
+    g.strokeStyle='rgba(79,195,247,.85)';g.setLineDash([6,4]);g.lineWidth=1.5;g.strokeRect(cx-pw/2+16,cy-ph/2+16,pw-32,ph-32);g.setLineDash([]);
+  } else if(kind==='gauge'){
+    const y=cy+ph*.3; g.strokeStyle=green;
+    [[-.36],[.36]].forEach(([a])=>{g.beginPath();g.arc(cx+a*pw,y,ph*.09,0,7);g.stroke();});
+    g.beginPath();g.moveTo(cx-.36*pw,y+ph*.16);g.lineTo(cx+.36*pw,y+ph*.16);g.stroke();
+    g.fillStyle=green;g.font='bold 14px Segoe UI, sans-serif';g.fillText('2.541 mm',cx-30,y+ph*.16-8);
+  }
+}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+
+/* ===== ghi chú theo màn ===== */
+const NOTES={
+ start:{h:'Khởi động',
+  ev:['RefVis-C: màn chờ khởi động (FormSplash) theo file ngôn ngữ chỉ có tên phần mềm + một dòng "đang khởi động, vui lòng chờ"; log thật ghi lỗi mở camera ngay lúc khởi động, rồi hộp lỗi bản quyền chặn giữa chừng.',
+      'Spike: nạp file QuickBuild 2 job mất 14–18 s (lần chạm VisionPro đầu). MeoVision Ch17: lần gọi VisionPro đầu 4,5–11 s.',
+      'MeoVision đã có StartupSequence (Ch17–18): bước bắt buộc / không bắt buộc, thời hạn từng bước, báo cáo "SẴN SÀNG / KHÔNG ĐƯỢC CHẠY TỰ ĐỘNG".'],
+  dec:['Hiện từng bước với kết quả bằng chữ và thời gian — chữ lấy đúng từ file ngôn ngữ của code đã có.',
+      'Thêm 2 bước của Ch19–21: nạp job theo sản phẩm (tiến độ từng lệnh) và mở kênh giao tiếp.',
+      'Thiết bị lỗi không chặn mở phần mềm, nhưng chặn tự ONLINE; bước bắt buộc hỏng thì dừng và nói lý do.']},
+ main:{h:'Trang chính — khung chung của mọi màn',
+  ev:['RefVis-A và RefVis-C (đã chạy thật) giống nhau ở 4 điểm: thanh công cụ biểu tượng lớn có chữ; lưới khung ảnh đặt tên theo CHỨC NĂNG (không theo camera); vùng phải có tab Log + chạy tay; thanh trạng thái có ô màu cho từng thiết bị và số kết nối.',
+      'RefVis-C: mỗi khung ảnh có thanh zoom/kéo/lưới riêng + dòng toạ độ/zoom/giá trị pixel (của control hiển thị VisionPro). Thanh trạng thái: sản phẩm, người dùng, số server, số kết nối, CPU, RAM, giờ.',
+      'RefVis-A: log có dòng lỗi tô đỏ; ô trạng thái thiết bị đỏ/xanh ngay dưới đáy.',
+      'Repo GitHub (kiểm tra ô tô, tản nhiệt, AOI): đèn Camera/PLC/Đèn; bộ đếm OK/NG/tỷ lệ theo camera; nút xoá đếm cho người vận hành.',
+      'Ứng dụng do Application Wizard của VisionPro sinh ra (đã chạy): danh sách job kèm chuỗi chấm kết quả các lần gần nhất; thanh kết quả lớn "Job: ACCEPT"; Run Once / Run Continuously; "System is ONLINE".',
+      'Spike nhúng CogRecordsDisplay thật vào lưới 2×2: combobox record hiện tên thô (LastRun.CogImageFileTool1.OutputImage) và thanh cuộn ăn chỗ; tắt được bằng ShowRecordsDropDown / HorizontalScrollBar / VerticalScrollBar. Nền navy quanh ảnh không đổi được bằng BackColor.'],
+  dec:['Giữ đúng bố cục quen thuộc đó, chỉ thêm: thẻ OK/NG + thời gian xử lý ngay đầu khung; lý do NG trên khung (không chỉ màu); dải 16 kết quả gần nhất bấm để xem lại.',
+      'ONLINE/OFFLINE là nút lớn duy nhất có màu trên thanh công cụ: ONLINE = nhận lệnh máy; OFFLINE = trả lỗi ngay, không để máy chờ timeout. Đổi bằng nhấn giữ 1 s, Kỹ sư trở lên.',
+      'Mất camera: khung đó gạch chéo + nói đang thử lại lần mấy, chờ bao lâu, lệnh sẽ trả gì. Các khung khác vẫn chạy.',
+      'Nút thiếu quyền vẫn hiện, mờ + khoá + nói cần vai trò nào (bấm thử với vai trò Vận hành).',
+      'Khung ảnh: Vận hành chỉ có nút "Ảnh kết quả ↔ Ảnh gốc" (record khai báo sẵn theo lệnh); Kỹ sư có thêm combobox record gốc VisionPro (đổi vai trò để xem). Không thanh cuộn.',
+      'Dock phải 380 px và thu gọn được (nút »): ảnh camera tỉ lệ 1.2 trong khung 2×2 chỉ dùng ~65 % bề ngang khung, nên trả chỗ cho ảnh khi không cần nhật ký.']},
+ camera:{h:'Camera & đèn',
+  ev:['RefVis-A: form camera nhúng nguyên editor lấy ảnh của VisionPro. RefVis-C: form lấy ảnh có phơi sáng/độ sáng/tương phản, Quét lại camera, Lưu ảnh, nút Đèn; form đèn riêng (hãng, kênh, COM/IP).',
+      'Repo AOI: đèn khai báo theo IP/SN/COM; form Camera = CogAcqFifoEditV2 + nút Lưu riêng. Repo tản nhiệt cũng mở CogAcqFifoEditV2.',
+      'Spike: CogAcqFifoEditV2 chạy được khi không có camera (danh sách thiết bị trống, nút Initialize mờ).'],
+  dec:['Danh sách theo VAI TRÒ trong machine.json (TopCam, BottomCam…), không theo số thứ tự. Sản phẩm chỉ nói cần vai trò nào.',
+      'Nhúng editor lấy ảnh GỐC của VisionPro (cách mọi dự án thật đều làm), ẩn Open/Save; thêm nút "Ghi phơi sáng + đèn vào lệnh" vì thông số chạy thật nằm trong bảng lệnh của sản phẩm.',
+      'Live/chụp thử chỉ khi OFFLINE (tránh tranh camera với lệnh máy) — nút mờ và nói lý do.']},
+ calib:{h:'Hiệu chuẩn',
+  ev:['RefVis-C: tab Checkerboard / ToolBlock / N-Point / Tâm xoay / Ánh xạ / Kết quả; bảng 9 điểm ảnh↔máy; RMS, kích thước pixel; nhãn "Chưa hiệu chuẩn"; máy dẫn bằng lệnh (CN/CX…).',
+      'RefVis-A: form hiệu chuẩn theo lệnh và FOV lớn.',
+      'Spike: CogCalibNPointToNPointEditV2 trong cột 1212×753 hiển thị đủ bảng điểm, bậc tự do, Compute, "Not Calibrated".'],
+  dec:['Thanh tiến trình 5 bước do máy dẫn + chỉnh tay khi chưa có máy.',
+      'Hiệu chuẩn thuộc MÁY, không thuộc sản phẩm; luôn hiện ngày, người làm, RMS kèm ngưỡng, hạn kiểm lại.',
+      'Sai số từng điểm trong bảng để thấy điểm nào kéo RMS lên.',
+      'Tab "Editor VisionPro": editor gốc để kiểm tra/chỉnh tay trên cùng đối tượng hiệu chuẩn mà luồng máy dẫn tạo ra.']},
+ jobs:{h:'Lệnh & job',
+  ev:['RefVis-C: tab Kiểm tra (mỗi lệnh gắn camera, khung, hiệu chuẩn, phơi sáng, timeout); tab Dịch vụ (lệnh nào trả output nào); tab Dữ liệu: bù X/Y, chuẩn/trên/dưới/đơn vị ngoài job.',
+      'RefVis-A: form nhúng editor ToolBlock + nút Lưu tool; dữ liệu bù theo trạm.',
+      'Repo ô tô: PMAlign editor; repo tản nhiệt: min/max/bù + tải NG gần nhất để chỉnh; repo AOI: CogToolBlockEditV2 + nút Lưu riêng; repo WPF: tắt LocalDisplayVisible, dùng display riêng.',
+      'Application Wizard: "Configuration" mở NGUYÊN QuickBuild (CogJobManagerEdit), chỉ Administrator, chỉ khi đang dừng.',
+      'Spike CogToolBlockEditV2 trong form 1560×820: dùng tốt (vùng editor 1534×693, tối thiểu 489 px ngang). Thanh công cụ có 19 nút, trong đó Open/Save/Save As/Reset và "Protect with a password" — ẩn được bằng cách duyệt ToolBar con. Thừa hưởng font 9.75 của form làm chồng chữ; đặt lại font mặc định thì hết.'],
+  dec:['Ba tab: Bảng lệnh / Job / Kết quả trả về & giới hạn — đúng 3 việc kỹ sư làm.',
+      'Editor ToolBlock gốc nhúng nguyên bản, nhưng làm trên BẢN SAO; Lưu = sao lưu bản cũ + ghi ai/lúc nào.',
+      'Giới hạn và bù nằm ngoài .vpp để chỉnh số không phải mở job. Chạy bộ ảnh có nhãn trước khi lưu.',
+      'KHÔNG nhúng nguyên QuickBuild như Wizard: QuickBuild có mở/lưu file, Navigator, Posted Items riêng — vượt qua thư mục sản phẩm và sao lưu của MeoVision. Job của MeoVision = một ToolBlock cho mỗi lệnh.',
+      'Ẩn 5 nút nguy hiểm của editor; chữ trong editor giữ tiếng Anh (theo bản VisionPro cài), có ghi chú để người dùng không tưởng là lỗi dịch.']},
+ comm:{h:'Giao tiếp — vision là phần mềm riêng',
+  ev:['RefVis-C: vision là TCP server 127.0.0.1:10001/10002 (mỗi camera một cổng), PC control cùng máy nối vào; form Giao tiếp có cây server, ô nhận/gửi, Hex, gửi lặp, bật/tắt server.',
+      'Repo ô tô: form giao tiếp PLC liệt kê từng bit READY/INIT/START/END/NG/ERR + Keep Alive. Repo khung máy: TCP debug hex, gửi lặp.',
+      'RefVis-A (mã nguồn): 1 server cổng 3000 cho 4 camera, mỗi lệnh chạy một luồng. RefVis-C (cấu hình): 8 server 10001–10008 khai ở cấp máy, mỗi lệnh gán ServerIndex. QuickBuild: thiết bị TCP khai ở cấp ứng dụng, mẫu của Cognex có 2 job chung 1 cổng 5001.',
+      'VisionPro có sẵn thư viện NDM (EtherNet/IP, PROFINET, SLMP) với Trigger, Inspection Complete, Job Change Request, Offline Request, Soft Event + control SlmpConfigurator — nhưng chỉ tạo được qua card Cognex CC24 (máy này: 0 card). QuickBuild có Communications Explorer; mẫu TCPIP của VisionPro có server/client.'],
+  dec:['Ba kiểu (bộ chọn "Kết nối" ở trên): PC control cùng máy (127.0.0.1), PC control máy khác (LAN, chỉ nhận client khai báo), PLC trực tiếp (MC/Modbus TCP, bit bắt tay + thanh ghi).',
+      'KÊNH (tác giả chốt, DESIGN_LOG [17]): khai ở cấp máy; mỗi lệnh chọn kênh. Kênh = 1 cổng TCP hoặc 1 vùng bắt tay PLC. Máy 1 trạm → 1 kênh (như RefVis-A, mẫu QuickBuild: nhiều job chung 1 cổng); trạm chạy cùng lúc → mỗi trạm 1 kênh (như RefVis-C). Lệnh sai kênh → ERR,CHANNEL. Mỗi kênh một ô trạng thái.',
+      'PLC Mitsubishi làm trước (tác giả chốt): một kết nối MC 3E dùng chung, mỗi kênh một vùng D/M riêng.',
+      'Phân biệt NG (đo được, không đạt) với ERR (không đo được). OFFLINE trả ERR ngay. Nhịp tim hai chiều.',
+      'Gửi thử đi qua đúng đường xử lý thật, chỉ khi OFFLINE.',
+      'PLC trực tiếp do MeoVision tự làm (MC 3E / Modbus TCP) nhưng đặt tên tín hiệu theo NDM (Trigger, Trigger Ack, Acquiring, Inspection Complete, Results Valid, Online, Job Change Request, Set Offline). Có card CC24 thì thêm kiểu "NDM" dùng thư viện Cognex.']},
+ product:{h:'Sản phẩm',
+  ev:['RefVis-A: quản lý mã sản phẩm (danh sách + tạo mới), tên sản phẩm ở góc phải màn chính. RefVis-C: đổi project (combobox + Thêm/Xoá/Chuyển); máy đổi project bằng lệnh.',
+      'Sách Ch19: thư mục sản phẩm tự chứa (product.json + jobs/*.vpp + golden + samples).'],
+  dec:['Bảng có cột "Kiểm tra": sản phẩm cần thiết bị máy này không có → không kích hoạt được, nói rõ thiếu gì.',
+      'Vận hành KHÔNG được chuyển sản phẩm (tác giả chốt) — chỉ xem. Chuyển: Kỹ sư, hoặc máy gửi lệnh SW. Tạo/sửa/xoá: Kỹ sư và OFFLINE.']},
+ history:{h:'Lịch sử',
+  ev:['RefVis-A/C: không có màn lịch sử — người dùng mở thư mục ảnh của Windows (bài học trong sách).',
+      'Repo ô tô: tra cứu theo ngày/serial/kết quả/ca + báo cáo ca. Repo tản nhiệt: tab lịch sử, giữ ảnh theo ngày.'],
+  dec:['Bảng NG lọc được + ảnh gốc kèm overlay ngay bên cạnh; vẫn giữ nút "Mở thư mục ảnh" vì người dùng quen.',
+      'Kỹ sư: chạy lại ảnh cũ với job hiện tại, đánh dấu NG giả, tạo gói chẩn đoán.']},
+ settings:{h:'Cài đặt',
+  ev:['RefVis-C: 8 tab dạng bảng (hiển thị, hiệu chuẩn, định vị, kiểm tra, dịch vụ, dữ liệu, lưu ảnh, đèn) + cột nút chung bên phải: Xoá/Lên/Xuống/Hoàn tác/Áp dụng/Lưu/Khôi phục/Mặc định.',
+      'RefVis-A: tham số hệ thống — số camera, đèn, số khung, lưu ảnh OK/NG gốc/cắt, số ngày giữ, cảnh báo dung lượng, đường dẫn.',
+      'Application Wizard › Application Options: Online/Offline lúc khởi động, bật I/O khi khởi động, tắt hiển thị ảnh (chạy nhanh), xoá hàng đợi lịch sử.',
+      'Spike: nạp file QuickBuild 2 job mất 14–18 s (lần chạm VisionPro đầu). Máy phát triển đặt tỉ lệ 125 % — control VisionPro vẫn dùng được khi không ép font.'],
+  dec:['Chỉ giữ cài đặt của MÁY/HỆ THỐNG (hiển thị, thiết bị, lưu ảnh, lưu dữ liệu, người dùng, hệ thống). Phần thuộc sản phẩm chuyển sang "Lệnh & job".',
+      'Giữ cột nút bên phải như RefVis-C (quen tay), cần Quản trị.']},
+ user:{h:'Đăng nhập — 3 vai trò',
+  ev:['RefVis-C: chọn người dùng trong danh sách + mật khẩu + đổi mật khẩu; tự đăng xuất sau 10 phút; log thật chỉ thấy chuyển Vận hành ↔ Kỹ sư dù phần mềm có 5 mức.',
+      'RefVis-A: đăng nhập ID/mật khẩu + đổi mật khẩu.',
+      'Application Wizard của Cognex: đúng 3 mức Operator / Supervisor / Administrator; mức thấp hơn đổi không cần mật khẩu.'],
+  dec:['Ba vai trò Vận hành / Kỹ sư / Quản trị. Vận hành không cần mật khẩu.',
+      'Không khoá tài khoản khi nhập sai (máy không được dừng vì quên mật khẩu).']}
+};
+function renderNotes(){
+  const n=NOTES[S.screen]||NOTES.main;
+  const perm=[['Xem trang chính, nhật ký, bộ đếm, lịch sử','✓','✓','✓'],['Đặt lại bộ đếm','✓','✓','✓'],['Chuyển sang sản phẩm có sẵn (máy vẫn đổi được bằng lệnh SW)','—','✓','✓'],['Chạy tay, gửi thử, live/chụp thử (khi OFFLINE)','—','✓','✓'],['Camera, hiệu chuẩn, lệnh & job, giao tiếp; tạo/sửa sản phẩm','—','✓','✓'],['ONLINE ↔ OFFLINE; thoát chương trình','—','✓','✓'],['Cài đặt hệ thống, người dùng','—','—','✓']];
+  $('#notes').innerHTML=`<h2>${esc(n.h)}</h2><div><h3>Thấy ở phần mềm thật</h3><ul>${n.ev.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div><h3>Quyết định cho MeoVision</h3><ul>${n.dec.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+   <div class="roles"><h3>Quyền theo vai trò (áp cho mọi màn)</h3><table><thead><tr><th>Việc</th><th>Vận hành</th><th>Kỹ sư</th><th>Quản trị</th></tr></thead><tbody>${perm.map(r=>`<tr><td>${r[0]}</td><td class="c">${r[1]}</td><td class="c">${r[2]}</td><td class="c">${r[3]}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ===== sự kiện ===== */
+let toastTimer=0, holdTimer=0;
+function showToast(msg){S.toast=msg;const el=$('#toast');if(el){el.hidden=false;el.querySelector('span').textContent=msg;}clearTimeout(toastTimer);toastTimer=setTimeout(()=>{S.toast='';const e=$('#toast');if(e)e.hidden=true;},2600);}
+function wire(){
+  document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.open, tl=TOOLS.find(x=>x[0]===id);
+    if(!can(tl[2])){showToast(`${t('need')}: ${roleName(tl[2])} — ${t('login_to')}`);return;}
+    if(id==='exit'){showToast('Thoát: hỏi xác nhận, tắt đèn, đóng camera, báo máy "vision dừng".');return;}
+    S.screen=id;render();
+  });
+  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{S.screen='main';render();});
+  document.querySelectorAll('[data-dock]').forEach(b=>b.onclick=()=>{S.dock=b.dataset.dock;render();});
+  document.querySelectorAll('[data-dockopen]').forEach(b=>b.onclick=()=>{S.dock=b.dataset.dockopen;S.dockOpen=true;render();});
+  const pin=$('#dockPin'); if(pin) pin.onclick=()=>{S.dockOpen=false;render();};
+  document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{S.ch=+b.dataset.ch;render();});
+  document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{const i=b.dataset.view;S.view[i]=!S.view[i];render();});
+  document.querySelectorAll('[data-logf]').forEach(b=>b.onclick=()=>{S.logf=b.dataset.logf;render();});
+  document.querySelectorAll('[data-ftab]').forEach(b=>b.onclick=()=>{const [f,k]=b.dataset.ftab.split(':');S.ftab[f]=k;render();});
+  document.querySelectorAll('[aria-disabled="true"]').forEach(b=>b.onclick=e=>{e.preventDefault();showToast(b.dataset.why||why());});
+  const ls=$('#langSel'); if(ls) ls.onchange=()=>{S.lang=ls.value;render();};
+  const mb=$('#modeBtn');
+  if(mb){
+    const start=()=>{ if(!can('eng')){showToast(`${t('need')}: ${roleName('eng')}`);return;} holdTimer=setTimeout(()=>{S.online=!S.online;render();},1000); };
+    const stop=()=>clearTimeout(holdTimer);
+    mb.addEventListener('pointerdown',start);mb.addEventListener('pointerup',stop);mb.addEventListener('pointerleave',stop);
+    mb.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(can('eng')){S.online=!S.online;render();}else showToast(`${t('need')}: ${roleName('eng')}`);}});
+  }
+}
+function fit(){const w=$('#stage').clientWidth, k=Math.min(1,w/1920);$('#scaler').style.transform=`scale(${k})`;$('#stage').style.height=(1080*k)+'px';}
+function render(){renderDemo();renderApp();renderNotes();fit();}
+window.addEventListener('resize',()=>{fit();});
+// Mở thẳng một màn: #<màn>[-<vai trò>[-<tab>]], ví dụ #jobs-eng-tool, #camera-eng, #comm-eng-link
+(function(){
+  const [scr,role,tab]=(location.hash||'').replace('#','').split('-');
+  if(role&&LV[role]!==undefined) S.role=role;
+  if(scr&&(scr==='main'||scr==='user'||NOTES[scr])) S.screen=scr;
+  if(tab&&S.screen) S.ftab[S.screen]=tab;
+  if(scr==='comm'&&tab==='plc'){S.topo='plc';S.ftab.comm='link';}
+  if(scr&&scr!=='main'&&S.screen!=='user'&&!canOpen(S.screen)) S.screen='main';
+})();
+render();
+</script>

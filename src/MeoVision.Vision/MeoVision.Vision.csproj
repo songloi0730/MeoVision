@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Mọi thứ chạm thư viện xử lý ảnh Cognex nằm ở đây và CHỈ ở đây. -->
+  <PropertyGroup>
+    <RootNamespace>MeoVision.Vision</RootNamespace>
+    <AssemblyName>MeoVision.Vision</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <!-- Chương 23–24: dựng ảnh kèm đồ hoạ cần CogRecordDisplay (control ActiveX). -->
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Cognex.VisionPro.Controls">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Display.Controls">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Display.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- DLL Cognex nằm trong GAC khi cài VisionPro:
+         Private=False, không chép vào thư mục build. -->
+    <Reference Include="Cognex.VisionPro">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Core">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ImageFile">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ImageFile.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Chương 19: CogToolBlock (job của mỗi lệnh) -->
+    <Reference Include="Cognex.VisionPro.ToolGroup">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ToolGroup.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Chương 20: tool hiệu chuẩn N điểm / bàn cờ (calibration.vpp của máy) -->
+    <Reference Include="Cognex.VisionPro.CalibFix">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.CalibFix.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeoVision.Core\MeoVision.Core.csproj" />
+  </ItemGroup>
+
+</Project>

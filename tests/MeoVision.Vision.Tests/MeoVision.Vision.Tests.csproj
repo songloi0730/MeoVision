@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Test TÍCH HỢP: chạy thật trên VisionPro cài trong máy (cần license). -->
+  <PropertyGroup>
+    <RootNamespace>MeoVision.Vision.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Cognex.VisionPro">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.Core">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Chương 19: tạo job .vpp thật cho test bộ kiểm job -->
+    <Reference Include="Cognex.VisionPro.ToolGroup">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ToolGroup.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Chương 20: job chạy thật (Blob) + hiệu chuẩn N điểm -->
+    <Reference Include="Cognex.VisionPro.Blob">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.Blob.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.CalibFix">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.CalibFix.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ImageFile">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ImageFile.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Cognex.VisionPro.ImageProcessing">
+      <HintPath>$(CognexVisionProDir)\Cognex.VisionPro.ImageProcessing.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Ảnh kèm đồ hoạ (DESIGN_LOG [26]) đọc lại bằng Bitmap -->
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Kiểm CHÍNH file mẫu đi kèm exe với các factory thật -->
+    <Content Include="..\..\src\MeoVision.UI\machine.example.json" Link="machine.example.json"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\src\MeoVision.UI\machine.plc.example.json" Link="machine.plc.example.json"
+             CopyToOutputDirectory="PreserveNewest" />
+    <!-- Chương 19: sản phẩm mẫu đi kèm repo phải hợp lệ với bộ kiểm job THẬT -->
+    <Content Include="..\..\samples\products\P-1024\**" LinkBase="samples\products\P-1024"
+             CopyToOutputDirectory="PreserveNewest" />
+    <!-- Chương 20: hiệu chuẩn mẫu của máy (lệnh T2) -->
+    <Content Include="..\..\samples\machine\**" LinkBase="samples\machine"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MeoVision.Core\MeoVision.Core.csproj" />
+    <ProjectReference Include="..\..\src\MeoVision.Vision\MeoVision.Vision.csproj" />
+    <ProjectReference Include="..\..\src\MeoVision.App\MeoVision.App.csproj" />
+  </ItemGroup>
+
+</Project>
