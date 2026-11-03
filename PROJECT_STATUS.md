@@ -2,7 +2,7 @@
 
 > Đọc file này TRƯỚC NHẤT mỗi session. Trạng thái của bản V0–V3 cũ: `legacy/PROJECT_STATUS_V0-V3.md`.
 
-**Cập nhật lần cuối:** 2026-11-02 (Session 28 — tài liệu tool VisionPro + 3 job mẫu nối nhiều tool, `docs/vision-tools/`, CHƯA chạy trên VisionPro; Session 27 — sửa treo khi để yên lâu: ghim DLL native VisionPro — DESIGN_LOG [30]; Session 26 — không gửi lý do cho máy, lệnh `kind` Inspect/Guide, bỏ qua chỉ cho lệnh kiểm tra — DESIGN_LOG [29]; trước đó Session 25: bỏ qua có kiểm soát, dải cảnh báo, Giao tiếp, Hiệu chuẩn — DESIGN_LOG [28]). MeoVision đã dựng lại từ đầu cho **Phần VI**
+**Cập nhật lần cuối:** 2026-11-03 (Session 29 — chạy thật 3 job mẫu nhiều tool: ALL MATCH + 16 ảnh editor; sửa chạy kèm bản nháp với job có Fixture — DESIGN_LOG [31]; Session 28 — tài liệu tool VisionPro + 3 job mẫu, `docs/vision-tools/`; Session 27 — sửa treo khi để yên lâu: ghim DLL native VisionPro — DESIGN_LOG [30]; Session 26 — không gửi lý do cho máy, lệnh `kind` Inspect/Guide, bỏ qua chỉ cho lệnh kiểm tra — DESIGN_LOG [29]; trước đó Session 25: bỏ qua có kiểm soát, dải cảnh báo, Giao tiếp, Hiệu chuẩn — DESIGN_LOG [28]). MeoVision đã dựng lại từ đầu cho **Phần VI**
 của sách (DESIGN_LOG [9]–[19]). Chương 17–21 đã **xong code và xong chương sách**; code
 trong sách được tiêm nguyên văn từ repo này bằng `tools/inject_code.py` của dự án sách. Vì vậy **mọi
 thay đổi ở các file đã trích vào sách** đều phải chạy lại script đó (xem "Ràng buộc với sách" bên dưới).
@@ -13,7 +13,7 @@ thay đổi ở các file đã trích vào sách** đều phải chạy lại sc
 |---|---|
 | Nền tảng | net48 x64, C# 11 (+ polyfill `IsExternalInit`), `TreatWarningsAsErrors`, VisionPro 9.0 CR2 **bắt buộc**, không có engine giả lập (DESIGN_LOG [10]) |
 | Solution | 4 project src (Core / Vision / App / UI) + 2 project test. Build 0 lỗi 0 cảnh báo |
-| Test | **180/180 pass** (Vision chạy tuần tự) (`vstest.console /Platform:x64`); test tích hợp chạy THẬT VisionPro (thiết bị, mở .vpp, sản phẩm mẫu) |
+| Test | **182/182 pass** (Vision chạy tuần tự) (`vstest.console /Platform:x64`); test tích hợp chạy THẬT VisionPro (thiết bị, mở .vpp, sản phẩm mẫu) |
 | Ch17 — vòng đời | ✅ `AppPaths`/`ProductPaths` (3 vùng dữ liệu), `DataFolderCheck`, `StartupSequence`, `VisionRuntimeCheck` + `CognexVisionRuntime`, `SingleInstanceGuard`, `RunMarker`, `CrashReporter`, `ShutdownSequence`, `Program` |
 | Ch17 — đa ngôn ngữ | ✅ `Msg`, `ILocalizer`, `JsonLocalizer`, `LanguageFileCheck`, `UiText`, `languages/{vi-VN,en-US,zh-CN}.json`, đổi ngôn ngữ khi đang chạy |
 | Kiểm chứng chạy thật (exe) | ✅ khởi động OK (lần gọi VisionPro đầu 4,5–11 s); bản thứ hai bị chặn; kill → lần sau log "Previous run ended abnormally"; X hỏi xác nhận, `CloseMainWindow` không hỏi; đổi ngôn ngữ vi → zh khi chạy (ảnh: Hình 17.2 của sách) |
@@ -90,9 +90,7 @@ Chương trình (exe, DLL, `languages`, `appsettings.json`) tách hẳn khỏi `
 Cài đặt chạy thật của máy này: `D:\MeoVision\2.0.261031\` (chương trình + Data), ảnh/kết quả/log `D:\MeoVisionData\`;
 bản Debug ghi ảnh/log vào `D:\MeoVisionDev\` nhưng Data vẫn trong OneDrive (sẽ báo vàng — chỉ dùng để phát triển).
 
-0a. **Session 28 còn dở:** chạy `samples\toolchains\build.cmd` trên máy có VisionPro — sửa tên API/tham số nếu biên dịch
-   lỗi hoặc có `MISMATCH`; `build.cmd shots` → chèn ảnh `docs/vision-tools/shots/*.png` vào mục tương ứng của
-   VISIONPRO_TOOLS.md (bảng mục 12.2); sau đó gỡ các dấu "chưa chạy" trong tài liệu.
+0a. ✅ Session 28 → 29: `build.cmd` ALL MATCH, ảnh `shots/` đã chèn (DESIGN_LOG [31]).
 0. **Session 23 còn dở:** (a) ✅ exe Debug chạy lại, tài khoản nạp trước VisionPro; (b) ✅ sách Ch17/Ch24 đã sửa, xuất
    bản; (c) chụp lại Hình 22.2, 22.3, 23.1, 23.3, 23.4 (giao diện mới, nền xám); (d) ✅ phát hành `2.0.261030` + nâng cấp
    thật từ `2.0.261029`; (e) nhiều camera trong một lệnh mới kiểm bằng test, chưa có

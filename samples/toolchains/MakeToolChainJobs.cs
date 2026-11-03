@@ -121,7 +121,9 @@ internal static class MakeToolChainJobs
         tool.RunParams.EdgeMode = CogCaliperEdgeModeConstants.Pair;
         tool.RunParams.Edge0Polarity = CogCaliperPolarityConstants.DarkToLight;
         tool.RunParams.Edge1Polarity = CogCaliperPolarityConstants.LightToDark;
-        tool.RunParams.EdgePairWidth = expectedWidth;
+        // Bề rộng cặp dự kiến = hai vị trí cạnh tính từ tâm vùng (không có property "PairWidth").
+        tool.RunParams.Edge0Position = -expectedWidth / 2;
+        tool.RunParams.Edge1Position = expectedWidth / 2;
         tool.RunParams.ContrastThreshold = 30;
         tool.RunParams.FilterHalfSizeInPixels = 2;
         tool.RunParams.MaxResults = 1;

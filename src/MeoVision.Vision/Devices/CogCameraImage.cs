@@ -27,6 +27,24 @@ public sealed class CogCameraImage : CameraImage
         throw new ArgumentException("Not a Cognex camera image: " + image?.GetType().Name,
             nameof(image));
 
+    /// <summary>
+    /// Bản sao có cây hệ toạ độ RIÊNG, giữ nguyên các hệ đã có (hiệu chuẩn, Fixture của job trước).
+    /// Đo thật (MeoVision DESIGN_LOG [31]): Fixture của một job khác ghi đè hệ "Fixture" mà job
+    /// trước đã tạo trên cùng ảnh → lỗi "modified a coordinate space that it did not create";
+    /// <c>Copy()</c> và <c>CopyBase()</c> vẫn DÙNG CHUNG cây đó, chỉ constructor sao chép tách ra.
+    /// </summary>
+    public override CameraImage? CopyForAnotherJob()
+    {
+        ICogImage copy = Image switch
+        {
+            CogImage8Grey grey => new CogImage8Grey(grey),
+            CogImage16Grey grey16 => new CogImage16Grey(grey16),
+            CogImage24PlanarColor color => new CogImage24PlanarColor(color),
+            _ => throw new NotSupportedException("Cannot copy image type " + Image.GetType().Name),
+        };
+        return new CogCameraImage(copy, Source, CapturedAt);
+    }
+
     protected override void Dispose(bool disposing)
     {
         // ICogImage không khai báo IDisposable, nhưng lớp cụ thể (CogImage8Grey...) có —

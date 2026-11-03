@@ -184,7 +184,8 @@ public sealed class DraftSession : IDisposable
 
     /// <summary>
     /// Chạy lệnh của bản nháp trên một ảnh có sẵn (ảnh của lệnh thật, vòng ảnh gần nhất, file).
-    /// Kết quả mang khung CÙNG ảnh với record của bản nháp — người nhận phải Dispose khung đó.
+    /// Kết quả mang khung ảnh (bản sao riêng của ảnh nguồn, cùng điểm ảnh) với record của bản nháp —
+    /// người nhận phải Dispose khung đó.
     /// Null = bản nháp đã đóng.
     /// </summary>
     public CommandResult? Run(string code, DisplayFrame source, bool withRecord = true)
@@ -205,11 +206,26 @@ public sealed class DraftSession : IDisposable
         JobRequest request = new(c.Outputs.Select(o => o.Terminal).ToList(),
             c.Tunables.ToDictionary(t => t.Terminal, t => t.Value, StringComparer.Ordinal),
             withRecord);
-        JobRun run = _loaded.Job(c.Job).Run(source.Image, request);
+        // Ảnh của lệnh thật / vòng ảnh gần nhất đã có hệ toạ độ do job ĐANG CHẠY gắn vào (Fixture);
+        // job nháp là đối tượng khác, chạy thẳng trên ảnh đó thì Fixture của nó báo lỗi → chạy trên
+        // bản sao có cây hệ toạ độ riêng (DESIGN_LOG [31]).
+        CameraImage? own = source.Image.CopyForAnotherJob();
+        JobRun run;
+        try
+        {
+            run = _loaded.Job(c.Job).Run(own ?? source.Image, request);
+        }
+        catch
+        {
+            own?.Dispose();
+            throw;
+        }
         Judgement judgement = ResultJudge.Judge(c, run);
         long ms = watch.ElapsedMilliseconds;
+        DisplayFrame frame = own is null ? source.ShareWith(run.Record)
+            : new DisplayFrame(own, run.Record);
         return new CommandResult(c.Code, judgement.Status, judgement.Error, judgement.Outputs,
-            new StepTimes(0, 0, 0, 0, ms, ms, 0)) { Frame = source.ShareWith(run.Record) };
+            new StepTimes(0, 0, 0, 0, ms, ms, 0)) { Frame = frame };
     }
 
     /// <summary>

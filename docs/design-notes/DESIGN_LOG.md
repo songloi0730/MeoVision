@@ -1903,3 +1903,51 @@ không thao tác. Tiến trình treo thật, không tự hồi.
 
 - Bài học cho sách (Ch18/Ch24): ứng dụng giữ thư viện COM native suốt ca nên ghim DLL; "treo khi để yên" → nghĩ tới việc
   hệ thống dọn tài nguyên rảnh (COM unload, idle timer), không chỉ mã của mình. Backlog B3.
+
+## [31] 2026-11-03 — Chạy kèm bản nháp báo sai "khác kết quả" với mọi job có Fixture (ĐÃ LÀM — Session 29)
+
+### Bối cảnh
+
+Chạy thật `samples/toolchains/build.cmd shots` (job mẫu của Session 28 trên cloud): ToolShots nạp MỘT ảnh rồi cho cả 3 job
+chạy lần lượt — job 2 và 3 lỗi ở tool Fixture: *"This fixture tool has just modified a coordinate space that it did not
+create"*. Chạy kèm của MeoVision (`ShadowRunner` → `DraftSession.Run`) làm đúng như vậy: job nháp (đối tượng nạp riêng)
+chạy trên ảnh mà job đang chạy vừa gắn hệ `Fixture` vào; vòng ảnh gần nhất cũng thế. Job mẫu P-1024 không có Fixture nên
+test cũ không bắt được; job thật hầu như luôn có Fixture → chạy kèm sẽ báo "khác" ở MỌI lệnh.
+
+### Đo thật (spike `FixSpike2`, mỗi trường hợp job + ảnh nạp mới, lặp 2 vòng cùng kết quả)
+
+| Ảnh đưa cho job thứ hai (B) sau khi job A đã chạy | Cây hệ toạ độ | B |
+|---|---|---|
+| Cùng ảnh | dùng chung | Error |
+| `img.Copy(CopyPixels)` sau A | dùng chung | Error |
+| `img.Copy(CopyPixels)` lấy TRƯỚC khi A chạy | **vẫn dùng chung** — bản sao thấy `@\Fixture` A thêm sau | Error |
+| `img.CopyBase(CopyPixels)` | dùng chung | Error |
+| `new CogImage8Grey(img)` | riêng, giữ `@\calib` có trước | **Accept**, output trùng A |
+
+Cùng một đối tượng job chạy lại trên cùng ảnh thì không lỗi (tool nhận ra hệ do chính nó tạo).
+
+### Phương án
+
+| Phương án | Đánh đổi | Chọn |
+|---|---|---|
+| A. Job nháp chạy trên bản sao bằng constructor sao chép (`CameraImage.CopyForAnotherJob`) | chép điểm ảnh mỗi lần chạy nháp (vài ms với 5 MP); đúng cho mọi job, giữ hiệu chuẩn | **✔** |
+| B. Đặt `FixturedSpaceNameDuplicateHandling = Compatibility` cho Fixture của job nháp | sửa job của người dùng; job nháp khác job sẽ áp dụng | ✘ |
+| C. Đổi `FixturedSpaceName` của job nháp thành tên riêng | như B, và script tham chiếu tên hệ sẽ sai | ✘ |
+| D. Giữ một bản ảnh "sạch" trước khi job thật chạy | phải biết trước lệnh nào cần chạy kèm; `Copy()` không tách cây nên vẫn phải dùng constructor — quay về A | ✘ |
+
+### Đã làm
+
+- `Core/Devices/CameraImage.CopyForAnotherJob()` (ảo, mặc định null = ảnh không mang hệ toạ độ); `CogCameraImage` cài bằng
+  constructor sao chép cho `CogImage8Grey`/`CogImage16Grey`/`CogImage24PlanarColor`.
+- `DraftSession.Run` chạy job nháp trên bản sao; khung kết quả sở hữu bản sao (cùng điểm ảnh, record của bản nháp).
+- Test `FixtureSharedImageTests` (180 → 182) dùng job C1 thật: đối tượng thứ hai lỗi trên cùng ảnh, chạy được và ra cùng
+  output trên bản sao; bản sao giữ hệ có trước, không thấy hệ thêm sau.
+- `samples/toolchains`: ToolShots cho mỗi job một ảnh riêng; `CogCaliper` không có `EdgePairWidth` (dùng
+  `Edge0Position`/`Edge1Position`); `build.cmd` gọi exe bằng đường dẫn đầy đủ (máy có `NoDefaultCurrentDirectoryInExePath`).
+  `build.cmd` → ALL MATCH 8 ảnh × 3 job; 16 ảnh chụp editor thật chèn vào `VISIONPRO_TOOLS.md`.
+
+### Hệ quả
+
+- Sách Ch22 (chạy kèm) + Ch7 (Fixture) cần thêm mục lỗi này — backlog B3.
+- Quy tắc chung: hai đối tượng job khác nhau không bao giờ chạy trên cùng một `ICogImage`; `Copy()` của VisionPro không
+  phải bản sao độc lập về hệ toạ độ.

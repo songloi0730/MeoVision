@@ -1,5 +1,15 @@
 # CHANGELOG — MeoVision
 
+## Session 29 — 2026-11-03 — Chạy thật job mẫu nhiều tool; sửa chạy kèm với job có Fixture (DESIGN_LOG [31])
+
+- Gộp nhánh cloud `claude/affectionate-lovelace-57bkpt` (Session 28) vào `main`; chạy `samples/toolchains/build.cmd` trên
+  VisionPro 9.0 CR2: sửa `EdgePairWidth` (không tồn tại → `Edge0Position`/`Edge1Position`), `build.cmd` gọi exe bằng đường
+  dẫn đầy đủ → **ALL MATCH** 8 ảnh × 3 job; `build.cmd shots` → 16 ảnh editor thật, chèn vào `VISIONPRO_TOOLS.md`.
+- **Lỗi thật tìm ra khi chụp:** job thứ hai chạy trên cùng ảnh → Fixture lỗi "modified a coordinate space that it did not
+  create". Chạy kèm bản nháp của MeoVision dính đúng lỗi này với mọi job có Fixture. Sửa: `CameraImage.CopyForAnotherJob`
+  (constructor sao chép — `Copy()`/`CopyBase()` vẫn dùng chung cây hệ toạ độ, đo thật), `DraftSession.Run` chạy trên bản
+  sao. Test 180 → 182 (`FixtureSharedImageTests`).
+
 ## Session 28 — 2026-11-02 — Tài liệu tool VisionPro + job mẫu nối nhiều tool
 
 - **`docs/vision-tools/VISIONPRO_TOOLS.md`:** bản đồ ~25 tool thường dùng; ToolBlock/terminal/record; hệ toạ độ (`@`, `.`,

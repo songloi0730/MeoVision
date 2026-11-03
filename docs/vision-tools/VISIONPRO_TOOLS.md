@@ -5,15 +5,15 @@
 > nhiều tool với nhau** (PMAlign → Fixture → Caliper/FindCircle/FindLine/Blob → tool hình học), có
 > bộ ảnh mẫu kèm đáp án, script đầy đủ và chương trình tự dựng + tự kiểm.
 >
-> **Trạng thái kiểm chứng (2026-11-02, Session 28) — đọc trước khi trích vào sách:**
+> **Trạng thái kiểm chứng (viết 2026-11-02 Session 28, chạy thật 2026-11-03 trên VisionPro 9.0 CR2) — đọc trước khi trích vào sách:**
 >
 > | Phần | Đã kiểm thế nào |
 > |---|---|
 > | Bộ ảnh `samples/toolchains/images` + `truth.csv` | ✅ Sinh và kiểm độc lập bằng Python (phân vùng ngưỡng 120 trong vùng Blob: đếm đúng số lỗi mọi ảnh, bụi lớn nhất 7 px < MinArea 30) |
 > | Hình vùng tool `img/regions_*.png` | ✅ Vẽ bằng Python từ đúng hình học trong `MakeToolChainJobs.cs` — **hình minh hoạ, không phải ảnh chụp VisionPro** |
-> | `MakeToolChainJobs.cs`, `scripts/*.cs`, `ToolShots.cs` | ⚠️ **Chưa biên dịch, chưa chạy** — phiên này chạy trên container Linux, không có VisionPro/.NET Framework. Tên API viết theo VisionPro 9.x; chạy `samples\toolchains\build.cmd` trên máy có VisionPro: builder tự so 8 ảnh × 3 job với đáp án và in `MISMATCH` nếu lệch |
-> | Ảnh chụp editor VisionPro `shots/*.png` | ⏳ Chưa có — `build.cmd shots` chụp tự động (danh sách ở mục 12). Ảnh chụp thật đang có: `docs/ui/spike/shots/` (mục 12.1) |
-> | Đoạn code ngắn ở Phần II không thuộc 3 job | ⚠️ Chưa chạy — đánh dấu *(chưa chạy)* ngay tại chỗ |
+> | `MakeToolChainJobs.cs`, `scripts/*.cs`, `ToolShots.cs` | ✅ **Biên dịch + chạy thật** (2026-11-03): `build.cmd` → **ALL MATCH** 8 ảnh × 3 job (mục 11.5). Sửa khi chạy: `CogCaliper` không có `EdgePairWidth` (dùng `Edge0Position`/`Edge1Position`); `build.cmd` gọi exe bằng đường dẫn đầy đủ; ToolShots cho mỗi job một ảnh riêng (mục 6.2) |
+> | Ảnh chụp editor VisionPro `shots/*.png` | ✅ 16 ảnh chụp thật bằng `build.cmd shots`, đã chèn vào từng mục (danh sách ở mục 12.2) |
+> | Đoạn code ngắn ở Phần II không thuộc 3 job | ⚠️ Chưa chạy — vẫn đánh dấu *(chưa chạy)* ngay tại chỗ |
 
 ## Mục lục
 
@@ -182,6 +182,9 @@ builder kiểm khi chạy `build.cmd`); phần còn lại ghi *(chưa chạy)*.
 
 ### 6.1 `CogPMAlignTool` — tìm mẫu
 
+![`CogPMAlignEditV2` của tool Locate — tab Train Params, mẫu đã train (khung xanh), thuật toán PatMax & PatQuick](shots/C1_measure_Locate.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): `CogPMAlignEditV2` của tool Locate — tab Train Params, mẫu đã train (khung xanh), thuật toán PatMax & PatQuick.*
+
 **Dùng khi:** cần biết sản phẩm nằm ở đâu, xoay bao nhiêu, để mọi phép đo sau bám theo; hoặc đếm/định
 vị nhiều chi tiết giống nhau.
 
@@ -238,6 +241,9 @@ locate.RunParams.ApproximateNumberToFind = 1;
 
 ### 6.2 `CogFixtureTool` — gắn hệ sản phẩm vào ảnh
 
+![`CogFixtureEditV2` — phép biến đổi lấy từ `GetPose()` của Locate](shots/C1_measure_Fixture.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): `CogFixtureEditV2` — phép biến đổi lấy từ `GetPose()` của Locate.*
+
 **Dùng khi:** luôn đi ngay sau PMAlign (hoặc sau bất kỳ tool nào cho ra một phép biến đổi) để các tool
 sau khai vùng trong hệ sản phẩm.
 
@@ -249,7 +255,12 @@ sau khai vùng trong hệ sản phẩm.
 | `OutputImage` | **Cùng pixel** với ảnh vào (không chép ảnh, gần như không tốn thời gian), thêm hệ mới và chọn nó |
 
 **Bẫy:** cho tool sau ảnh *vào* của Fixture thay vì ảnh *ra* → vùng không đi theo, mà không có báo lỗi
-nào. Khi chỉ có điểm (tâm hai lỗ, hai dấu) thay vì một mẫu: `CogFixtureNPointToNPointTool`.
+nào. **Bẫy thứ hai (đo thật 2026-11-03):** `OutputImage` dùng chung pixel *và cây hệ toạ độ* với ảnh vào —
+hệ `Fixture` được ghi vào chính ảnh vào. Một job KHÁC (đối tượng nạp riêng, dù cùng file `.vpp`) chạy sau
+trên cùng ảnh thì Fixture của nó lỗi *"This fixture tool has just modified a coordinate space that it did
+not create"*. `image.Copy(...)` và `CopyBase(...)` **vẫn dùng chung cây đó** (bản sao lấy trước khi job
+đầu chạy vẫn thấy hệ `Fixture` thêm sau); chỉ constructor sao chép `new CogImage8Grey(img)` tách cây
+(giữ các hệ đã có, như hiệu chuẩn). MeoVision gặp đúng lỗi này ở chạy kèm bản nháp — DESIGN_LOG [31]. Khi chỉ có điểm (tâm hai lỗ, hai dấu) thay vì một mẫu: `CogFixtureNPointToNPointTool`.
 
 ```csharp
 // trong script (scripts/C1_measure.cs, hàm Locate)
@@ -264,6 +275,9 @@ return (CogImage8Grey)fixture.OutputImage;
 
 ### 7.1 `CogCaliperTool` — một cạnh / một cặp cạnh
 
+![Caliper Width chế độ cặp cạnh, vùng khai trong hệ Fixture nên xoay theo tấm](shots/C1_measure_Width.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): Caliper Width chế độ cặp cạnh, vùng khai trong hệ Fixture nên xoay theo tấm.*
+
 **Dùng khi:** đo bề rộng, khe hở, vị trí một cạnh dọc một hướng đã biết.
 
 Vùng là `CogRectangleAffine`: **trục x của hình chữ nhật = hướng tìm** (độ dài `SideXLength` = độ dài
@@ -274,7 +288,7 @@ nhiễu). Xoay hình chữ nhật 90° là tìm theo hướng khác.
 |---|---|---|
 | `EdgeMode` | `SingleEdge` / `Pair` | Đo bề rộng: `Pair` |
 | `Edge0Polarity`, `Edge1Polarity` | `DarkToLight`, `LightToDark`, `DontCare` — **theo hướng tìm** | Đặt đúng, đừng để `DontCare` khi biết trước |
-| `EdgePairWidth` | Bề rộng cặp dự kiến (dùng khi có hàm chấm điểm theo kích thước) | Bề rộng danh định |
+| `Edge0Position`, `Edge1Position` | Vị trí dự kiến của hai cạnh, tính từ tâm vùng theo hướng tìm — bề rộng cặp dự kiến = hiệu hai số (dùng khi có hàm chấm điểm theo kích thước). Không có property "EdgePairWidth" | `-w/2` và `+w/2` |
 | `ContrastThreshold` | Độ chênh xám tối thiểu của một cạnh | 20–40 với ảnh 8 bit |
 | `FilterHalfSizeInPixels` | Nửa bề rộng bộ lọc cạnh | ≈ nửa độ "nhoè" của cạnh; lớn quá nhập hai cạnh gần nhau |
 | `MaxResults` | Số kết quả giữ | 1 |
@@ -295,13 +309,17 @@ tool.Region = region;
 tool.RunParams.EdgeMode = CogCaliperEdgeModeConstants.Pair;
 tool.RunParams.Edge0Polarity = CogCaliperPolarityConstants.DarkToLight;
 tool.RunParams.Edge1Polarity = CogCaliperPolarityConstants.LightToDark;
-tool.RunParams.EdgePairWidth = expectedWidth;
+tool.RunParams.Edge0Position = -expectedWidth / 2;   // bề rộng cặp dự kiến
+tool.RunParams.Edge1Position = expectedWidth / 2;
 tool.RunParams.ContrastThreshold = 30;
 tool.RunParams.FilterHalfSizeInPixels = 2;
 tool.RunParams.MaxResults = 1;
 ```
 
 ### 7.2 `CogFindLineTool` — đường thẳng từ nhiều caliper
+
+![FindLine TopEdge — các caliper nhỏ dọc cạnh trên](shots/C3_corner_TopEdge.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): FindLine TopEdge — các caliper nhỏ dọc cạnh trên.*
 
 **Dùng khi:** cần một cạnh thẳng chính xác (góc xoay tinh, khoảng cách điểm–cạnh, giao hai cạnh).
 
@@ -339,6 +357,9 @@ tool.RunParams.NumToIgnore = 1;
 
 ### 7.3 `CogFindCircleTool` — đường tròn từ nhiều caliper
 
+![FindCircle HoleLeft — caliper toả ra từ trong lỗ](shots/C1_measure_HoleLeft.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): FindCircle HoleLeft — caliper toả ra từ trong lỗ.*
+
 | Property (`RunParams`, kiểu `CogFindCircle`) | Ý nghĩa |
 |---|---|
 | `ExpectedCircularArc.SetCenterRadiusAngleStartAngleSpan(cx, cy, r, start, span)` | Cung dự kiến; `span = 2π` là cả vòng |
@@ -365,6 +386,9 @@ tool.RunParams.NumToIgnore = 2;
 ## 8. Vùng và đếm: Blob, Histogram
 
 ### 8.1 `CogBlobTool`
+
+![Blob Defects — vùng tìm (khung xanh) đi theo tấm; đốm bụi nhỏ hơn Min Area 30 bị lọc](shots/C2_defects_Defects.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): Blob Defects — vùng tìm (khung xanh) đi theo tấm; đốm bụi nhỏ hơn Min Area 30 bị lọc.*
 
 **Dùng khi:** đếm đốm/lỗi/chi tiết, đo diện tích, tìm vật không có hình dạng cố định.
 
@@ -420,6 +444,9 @@ mToolBlock.Outputs["Mean"].Value = h.Result == null ? double.NaN : h.Result.Mean
 ```
 
 ## 9. Hình học (Dimensioning)
+
+![IntersectLineLine Corner — hai đường từ FindLine, giao điểm là góc tấm](shots/C3_corner_Corner.png)
+*Ảnh chụp VisionPro 9.0 CR2 thật (`build.cmd shots`, ảnh `ok_03.bmp` — tấm xoay −12°): IntersectLineLine Corner — hai đường từ FindLine, giao điểm là góc tấm.*
 
 Tool hình học **không xử lý ảnh**: nhận điểm/đường/đường tròn từ tool trước, tính số. `InputImage` chỉ
 để biết hệ toạ độ và vẽ đồ hoạ vào record. Đây là "keo" nối các tool đo cạnh với nhau.
@@ -853,14 +880,27 @@ build.cmd
 
 ```
 == C1_measure
-ok_01.bmp          Accept      4.2 ms  Width=360.1 Height=180.0 Pitch=230 HoleDiameter=48  ok
-ng_hole_07.bmp     Reject      3.9 ms  Width=- Height=- Pitch=- HoleDiameter=-  ok
+ok_01.bmp          Accept     63.4 ms  Width=360.248 Height=180.236 Pitch=229.999 HoleDiameter=48.091  ok
+ok_02.bmp          Accept      3.1 ms  Width=360.161 Height=180.017 Pitch=229.695 HoleDiameter=48.084  ok
+ok_03.bmp          Accept      3.7 ms  Width=360.357 Height=179.982 Pitch=229.687 HoleDiameter=48.114  ok
+ng_hole_07.bmp     Reject      4.1 ms  Width=- Height=- Pitch=- HoleDiameter=-  ok
                    message: HoleRight: hole not found
+ng_long_08.bmp     Accept      4.1 ms  Width=380.312 Height=179.836 Pitch=229.979 HoleDiameter=48.105  ok
+
+== C2_defects
+ok_01.bmp          Accept     53.6 ms  DefectCount=0 MaxDefectArea=0  ok
+ng_defect_05.bmp   Accept      7.4 ms  DefectCount=3 MaxDefectArea=112.956  ok
+
+== C3_corner
+ok_02.bmp          Accept      2.7 ms  X=185.272 Y=109.39 Angle=8.502 Squareness=89.955  ok
+ok_03.bmp          Accept      3.5 ms  X=94.981 Y=209.396 Angle=-11.977 Squareness=89.936  ok
 ...
 ALL MATCH
 ```
 
-*(Dạng dòng in ra; số trong ví dụ là số mong đợi, không phải số đo — chưa chạy.)* Dung sai so đáp án:
+*(Trích đầu ra THẬT, VisionPro 9.0 CR2, 2026-11-03 — lần chạy đầu mỗi job 20–60 ms vì nạp/biên dịch
+script, sau đó 3–7 ms. Job đo kích thước trả `Accept` cho ảnh dài 380 px: job chỉ ĐO, phán định OK/NG
+theo giới hạn nằm ở `product.json` — mục 5.)* Dung sai so đáp án:
 kích thước ±1 px, góc tấm ±1,5 px, góc xoay ±0,3°, độ vuông góc 90 ± 0,3°, số lỗi đúng tuyệt đối. Có
 dòng `MISMATCH` → mã thoát 1: xem cột nào lệch rồi chỉnh tham số trong `MakeToolChainJobs.cs` (polarity,
 hướng tìm, contrast) hoặc script. Hai chỗ đáng nghi nhất nếu lệch: **chiều tìm của FindLine** (+90° so
@@ -898,7 +938,7 @@ với Start→End) và **polarity** — cả hai đều có thể đảo mà kh�
 
 ![QuickBuild nhúng (CogJobManagerEdit)](../ui/spike/shots/qbedit.png)
 
-### 12.2 Ảnh sẽ chụp bằng `build.cmd shots`
+### 12.2 Ảnh chụp bằng `build.cmd shots` (2026-11-03)
 
 `ToolShots.exe` nạp từng job, chạy trên `images\ok_03.bmp` (tấm xoay −12° — thấy rõ vùng đi theo), mở
 editor V2 của từng tool rồi chụp (`PrintWindow`, như spike). Ra `docs/vision-tools/shots/`:
@@ -916,7 +956,9 @@ editor V2 của từng tool rồi chụp (`PrintWindow`, như spike). Ra `docs/v
 | `C3_corner_Corner.png`, `C3_corner_Squareness.png` | IntersectLineLine, AngleLineLine (9) |
 
 Tool nào VisionPro không có editor theo quy ước tên `Cog<Tên>EditV2` thì bị bỏ qua và ghi vào
-`shots/toolshots_log.txt`. Sau khi chụp: chèn ảnh vào các mục tương ứng ở trên (thay bảng này).
+`shots/toolshots_log.txt`. Lần chụp 2026-11-03: 16 ảnh tool (đã chèn vào mục 6–9); ảnh `*_toolblock.png`
+không ra (log không ghi editor nào cho ToolBlock) — chưa tìm nguyên nhân; ảnh `CogToolBlockEditV2` thật
+xem `../ui/spike/shots/tbedit.png` (mục 4).
 
 ## 13. Mẫu nối tool hay gặp khác
 

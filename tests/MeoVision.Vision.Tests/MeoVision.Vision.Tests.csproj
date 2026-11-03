@@ -53,6 +53,11 @@
     <!-- Chương 20: hiệu chuẩn mẫu của máy (lệnh T2) -->
     <Content Include="..\..\samples\machine\**" LinkBase="samples\machine"
              CopyToOutputDirectory="PreserveNewest" />
+    <!-- Job có Fixture (C1) + ảnh: chạy kèm bản nháp trên ảnh lệnh thật (DESIGN_LOG [31]) -->
+    <Content Include="..\..\samples\toolchains\jobs\C1_measure.vpp" Link="samples\toolchains\C1_measure.vpp"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\samples\toolchains\images\ok_03.bmp" Link="samples\toolchains\ok_03.bmp"
+             CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

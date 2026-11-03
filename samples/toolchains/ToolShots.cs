@@ -49,7 +49,10 @@ internal static class ToolShots
         {
             string job = Path.GetFileNameWithoutExtension(file);
             CogToolBlock block = (CogToolBlock)CogSerializer.LoadObjectFromFile(file);
-            block.Inputs["InputImage"].Value = image;
+            // Mỗi job một ảnh riêng: Fixture của job sau không được sửa hệ "Fixture" job trước đã gắn
+            // vào cùng ảnh (lỗi "modified a coordinate space that it did not create"); Copy() vẫn
+            // dùng chung cây hệ toạ độ, constructor sao chép thì không (MeoVision DESIGN_LOG [31]).
+            block.Inputs["InputImage"].Value = new CogImage8Grey((CogImage8Grey)image);
             block.Run();
             Log.Add(job + ": " + block.RunStatus.Result + " " + block.RunStatus.Message);
             blocks.Add(block);

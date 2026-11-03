@@ -13,10 +13,10 @@ for %%f in ("%VPRO_ROOT%\ReferencedAssemblies\Cognex.VisionPro*.dll") do (
 )
 "%CSC%" /nologo /target:exe /platform:x64 /out:MakeToolChainJobs.exe !REFS! MakeToolChainJobs.cs || exit /b 1
 "%CSC%" /nologo /target:winexe /platform:x64 /out:ToolShots.exe !REFS! /r:System.Windows.Forms.dll /r:System.Drawing.dll ToolShots.cs || exit /b 1
-MakeToolChainJobs.exe jobs images
+"%~dp0MakeToolChainJobs.exe" jobs images
 if errorlevel 1 (
   echo Self-check FAILED - see MISMATCH lines above.
   exit /b 1
 )
-if /i "%1"=="shots" ToolShots.exe jobs images\ok_03.bmp ..\..\docs\vision-tools\shots
+if /i "%1"=="shots" "%~dp0ToolShots.exe" jobs images\ok_03.bmp ..\..\docs\vision-tools\shots
 endlocal

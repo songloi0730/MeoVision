@@ -1,0 +1,35 @@
+C1_measure: Accept 
+C2_defects: Accept 
+C3_corner: Accept 
+Cognex.VisionPro.PMAlign.CogPMAlignEditV2 ← CogPMAlignTool
+snap C1_measure_Locate.png
+Cognex.VisionPro.CalibFix.CogFixtureEditV2 ← CogFixtureTool
+snap C1_measure_Fixture.png
+Cognex.VisionPro.Caliper.CogCaliperEditV2 ← CogCaliperTool
+snap C1_measure_Width.png
+Cognex.VisionPro.Caliper.CogCaliperEditV2 ← CogCaliperTool
+snap C1_measure_Height.png
+Cognex.VisionPro.Caliper.CogFindCircleEditV2 ← CogFindCircleTool
+snap C1_measure_HoleLeft.png
+Cognex.VisionPro.Caliper.CogFindCircleEditV2 ← CogFindCircleTool
+snap C1_measure_HoleRight.png
+Cognex.VisionPro.Dimensioning.CogDistancePointPointEditV2 ← CogDistancePointPointTool
+snap C1_measure_Pitch.png
+Cognex.VisionPro.PMAlign.CogPMAlignEditV2 ← CogPMAlignTool
+snap C2_defects_Locate.png
+Cognex.VisionPro.CalibFix.CogFixtureEditV2 ← CogFixtureTool
+snap C2_defects_Fixture.png
+Cognex.VisionPro.Blob.CogBlobEditV2 ← CogBlobTool
+snap C2_defects_Defects.png
+Cognex.VisionPro.PMAlign.CogPMAlignEditV2 ← CogPMAlignTool
+snap C3_corner_Locate.png
+Cognex.VisionPro.CalibFix.CogFixtureEditV2 ← CogFixtureTool
+snap C3_corner_Fixture.png
+Cognex.VisionPro.Caliper.CogFindLineEditV2 ← CogFindLineTool
+snap C3_corner_TopEdge.png
+Cognex.VisionPro.Caliper.CogFindLineEditV2 ← CogFindLineTool
+snap C3_corner_LeftEdge.png
+Cognex.VisionPro.Dimensioning.CogIntersectLineLineEditV2 ← CogIntersectLineLineTool
+snap C3_corner_Corner.png
+Cognex.VisionPro.Dimensioning.CogAngleLineLineEditV2 ← CogAngleLineLineTool
+snap C3_corner_Squareness.png

@@ -26,6 +26,13 @@ public abstract class CameraImage : IDisposable
 
     public DateTime CapturedAt { get; }
 
+    /// <summary>
+    /// Bản sao để một job KHÁC chạy trên cùng ảnh mà không đụng hệ toạ độ job trước đã gắn vào.
+    /// Null = ảnh không mang hệ toạ độ (ảnh giả trong test) — dùng chung được. Người gọi sở hữu
+    /// bản sao và phải Dispose nó.
+    /// </summary>
+    public virtual CameraImage? CopyForAnotherJob() => null;
+
     public void Dispose()
     {
         Dispose(true);
