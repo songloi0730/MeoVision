@@ -216,7 +216,11 @@ vị nhiều chi tiết giống nhau.
 **Bẫy:**
 - Để `ZoneAngle` mặc định → chỉ tìm được sản phẩm thẳng góc, lệch 5° là rớt điểm/không thấy.
 - Sản phẩm đối xứng 180° (tấm chữ nhật + 2 lỗ đối xứng) → PMAlign có thể khớp ngược chiều; cần chi tiết
-  phá đối xứng (tấm mẫu có **rãnh khuyết**) và/hoặc thu hẹp `ZoneAngle`.
+  phá đối xứng (tấm mẫu có **rãnh khuyết**) và/hoặc thu hẹp `ZoneAngle`. **Đo thật (2026-11-04):** ngay
+  cả với rãnh khuyết, vùng ±180° nhận `ok_04` (xoay 14°) ở **−166°, score 0,923** dù có ứng viên 1,000;
+  ±45° nhận đúng. `ApproximateNumberToFind = 2` + `XYOverlap = 1` thì kết quả #0 đúng; PMAlign thứ hai
+  chỉ quanh rãnh tìm đúng 13,99°. Chi tiết + 4 bài học PMAlign đo thật khác: sách Ch25 §25.3; tham số
+  PMAlign trong 133 tool của job công khai (timeout tắt 133/133, ±180° ở 81): sách Ch26 §26.3.3.
 - **Train lại = đổi gốc hệ sản phẩm** nếu đặt gốc khác → mọi vùng phía sau lệch theo. Luôn đặt
   `Origin` bằng số, không kéo tay.
 - Đổi đèn/độ phơi sáng làm điểm tụt nhưng vị trí vẫn đúng — xem điểm theo thời gian trước khi hạ

@@ -9,6 +9,10 @@
   create". Chạy kèm bản nháp của MeoVision dính đúng lỗi này với mọi job có Fixture. Sửa: `CameraImage.CopyForAnotherJob`
   (constructor sao chép — `Copy()`/`CopyBase()` vẫn dùng chung cây hệ toạ độ, đo thật), `DraftSession.Run` chạy trên bản
   sao. Test 180 → 182 (`FixtureSharedImageTests`).
+- **`tools/vppinspect/`** (2026-11-04): đọc TĨNH `.vpp`/`.vtt` (MS-NRBF, SOAP XML, XML đời COM) → cây tool + tham số,
+  terminal, link, nguyên văn script — không nạp .NET, không biên dịch script. Kiểm trên 3 job mẫu, 114 file mẫu VisionPro,
+  224 file tải từ 13 repo GitHub: 0 lỗi. Dùng cho sách Ch26 (học từ dự án công khai).
+- `VISIONPRO_TOOLS.md` §6.1: bẫy ±180° đo thật (`ok_04` −166°, score 0,923) + trỏ sách Ch25/Ch26 (sách v1.0.1.261104).
 
 ## Session 28 — 2026-11-02 — Tài liệu tool VisionPro + job mẫu nối nhiều tool
 
