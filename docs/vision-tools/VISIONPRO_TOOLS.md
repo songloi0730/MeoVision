@@ -258,8 +258,9 @@ sau khai vùng trong hệ sản phẩm.
 | `RunParams.FixturedSpaceName` | Tên hệ thêm vào (mặc định `Fixture`) |
 | `OutputImage` | **Cùng pixel** với ảnh vào (không chép ảnh, gần như không tốn thời gian), thêm hệ mới và chọn nó |
 
-**Bẫy:** cho tool sau ảnh *vào* của Fixture thay vì ảnh *ra* → vùng không đi theo, mà không có báo lỗi
-nào. **Bẫy thứ hai (đo thật 2026-11-03):** `OutputImage` dùng chung pixel *và cây hệ toạ độ* với ảnh vào —
+**Bẫy:** cho tool sau ảnh *vào* của Fixture mà vùng để hệ `.` → tool Accept nhưng không có kết quả, không báo
+lỗi. Hai cách đúng (đo thật 2026-11-04, sách Ch27 Bảng 27.5): ảnh *ra* + hệ `.` → kết quả theo hệ chi tiết; ảnh
+*vào* + vùng khai tên hệ `Fixture` → kết quả theo hệ của ảnh vào (job dẫn hướng thật hay dùng cách này). **Bẫy thứ hai (đo thật 2026-11-03):** `OutputImage` dùng chung pixel *và cây hệ toạ độ* với ảnh vào —
 hệ `Fixture` được ghi vào chính ảnh vào. Một job KHÁC (đối tượng nạp riêng, dù cùng file `.vpp`) chạy sau
 trên cùng ảnh thì Fixture của nó lỗi *"This fixture tool has just modified a coordinate space that it did
 not create"*. `image.Copy(...)` và `CopyBase(...)` **vẫn dùng chung cây đó** (bản sao lấy trước khi job
